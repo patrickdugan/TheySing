@@ -1,7 +1,7 @@
 // ============================================================================
 // THEY SING - Flat Map Scene
 // 2D map with 3D camera, orbital layer as Z-offset
-// Drop-in replacement for GraphScene
+// Enhanced with starfield, earth texture, and Kessler effects
 // ============================================================================
 
 import * as THREE from 'three';
@@ -21,6 +21,7 @@ const MAP_WIDTH = 50;
 const MAP_HEIGHT = 28;
 
 // Z layers
+const Z_STARS = -50;
 const Z_OCEAN = -0.5;
 const Z_LAND = 0;
 const Z_GRID = 0.01;
@@ -30,6 +31,7 @@ const Z_LASERS = 1.5;
 const Z_ORBITAL_RING = 2.8;
 const Z_NODES_ORBITAL = 3;
 const Z_UNITS_OFFSET = 0.4;
+const Z_KESSLER_DEBRIS = 4;
 
 // Visual
 const NODE_SIZE = 0.8;
@@ -179,6 +181,9 @@ export class FlatMapScene {
   // ==========================================================================
 
   private createMapBase(): void {
+    // Starfield background
+    this.createStarfield();
+    
     // Ocean plane
     const oceanGeo = new THREE.PlaneGeometry(MAP_WIDTH * 1.5, MAP_HEIGHT * 1.5);
     const oceanMat = new THREE.MeshBasicMaterial({ 
@@ -194,6 +199,44 @@ export class FlatMapScene {
     
     // Simple land masses (stylized)
     this.createLandMasses();
+  }
+
+  private createStarfield(): void {
+    const starCount = 2000;
+    const positions = new Float32Array(starCount * 3);
+    const colors = new Float32Array(starCount * 3);
+    const sizes = new Float32Array(starCount);
+    
+    for (let i = 0; i < starCount; i++) {
+      // Spread stars in a large box behind the map
+      positions[i * 3] = (Math.random() - 0.5) * 200;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 200;
+      positions[i * 3 + 2] = Z_STARS + Math.random() * -50;
+      
+      // Slight color variation (white to blue-white)
+      const temp = 0.8 + Math.random() * 0.2;
+      colors[i * 3] = temp;
+      colors[i * 3 + 1] = temp;
+      colors[i * 3 + 2] = 0.9 + Math.random() * 0.1;
+      
+      sizes[i] = 0.5 + Math.random() * 1.5;
+    }
+    
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    
+    const material = new THREE.PointsMaterial({
+      size: 0.3,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.8,
+      sizeAttenuation: true
+    });
+    
+    const stars = new THREE.Points(geometry, material);
+    this.scene.add(stars);
   }
 
   private createGrid(): void {
@@ -724,6 +767,88 @@ export class FlatMapScene {
         fadeOut();
       }
     }
+    
+    // Spawn Kessler debris particles
+    this.spawnKesslerDebris();
+  }
+
+  private kesslerDebris: THREE.Points | null = null;
+  private kesslerVelocities: Float32Array | null = null;
+
+  private spawnKesslerDebris(): void {
+    const debrisCount = 500;
+    const positions = new Float32Array(debrisCount * 3);
+    const colors = new Float32Array(debrisCount * 3);
+    this.kesslerVelocities = new Float32Array(debrisCount * 3);
+    
+    // Spawn debris around orbital ring
+    const radius = Math.min(MAP_WIDTH, MAP_HEIGHT) * 0.4;
+    
+    for (let i = 0; i < debrisCount; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const r = radius * (0.8 + Math.random() * 0.4);
+      
+      positions[i * 3] = Math.cos(angle) * r;
+      positions[i * 3 + 1] = Math.sin(angle) * r;
+      positions[i * 3 + 2] = Z_KESSLER_DEBRIS + (Math.random() - 0.5) * 2;
+      
+      // Orange/red debris
+      colors[i * 3] = 1.0;
+      colors[i * 3 + 1] = 0.3 + Math.random() * 0.4;
+      colors[i * 3 + 2] = 0.1;
+      
+      // Random velocities - expanding outward
+      const speed = 0.02 + Math.random() * 0.05;
+      this.kesslerVelocities[i * 3] = Math.cos(angle) * speed + (Math.random() - 0.5) * 0.02;
+      this.kesslerVelocities[i * 3 + 1] = Math.sin(angle) * speed + (Math.random() - 0.5) * 0.02;
+      this.kesslerVelocities[i * 3 + 2] = (Math.random() - 0.5) * 0.01;
+    }
+    
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    
+    const material = new THREE.PointsMaterial({
+      size: 0.15,
+      vertexColors: true,
+      transparent: true,
+      opacity: 1.0,
+      sizeAttenuation: true
+    });
+    
+    this.kesslerDebris = new THREE.Points(geometry, material);
+    this.effectGroup.add(this.kesslerDebris);
+  }
+
+  private updateKesslerDebris(): void {
+    if (!this.kesslerDebris || !this.kesslerVelocities) return;
+    
+    const positions = this.kesslerDebris.geometry.attributes.position.array as Float32Array;
+    const material = this.kesslerDebris.material as THREE.PointsMaterial;
+    
+    // Update positions
+    for (let i = 0; i < positions.length / 3; i++) {
+      positions[i * 3] += this.kesslerVelocities[i * 3];
+      positions[i * 3 + 1] += this.kesslerVelocities[i * 3 + 1];
+      positions[i * 3 + 2] += this.kesslerVelocities[i * 3 + 2];
+      
+      // Slow down over time
+      this.kesslerVelocities[i * 3] *= 0.995;
+      this.kesslerVelocities[i * 3 + 1] *= 0.995;
+      this.kesslerVelocities[i * 3 + 2] *= 0.995;
+    }
+    
+    this.kesslerDebris.geometry.attributes.position.needsUpdate = true;
+    
+    // Fade out
+    material.opacity *= 0.998;
+    
+    // Remove when faded
+    if (material.opacity < 0.01) {
+      this.effectGroup.remove(this.kesslerDebris);
+      this.kesslerDebris = null;
+      this.kesslerVelocities = null;
+    }
   }
 
   // ==========================================================================
@@ -1003,6 +1128,9 @@ export class FlatMapScene {
         group.rotation.z += delta * 0.5;
       }
     }
+    
+    // Update Kessler debris if active
+    this.updateKesslerDebris();
     
     this.renderer.render(this.scene, this.camera);
   }
