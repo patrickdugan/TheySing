@@ -10,6 +10,7 @@ import {
   UnitType, Vector, GameEvent
 } from '../engine/types';
 import { FlatMapScene } from '../three/FlatMapScene';
+import { TechTreeScene } from '../three/TechTreeScene';
 
 // ============================================================================
 // UI MANAGER CLASS
@@ -19,6 +20,7 @@ export class TheySingUI {
   private container: HTMLElement;
   private engine: TheySingEngine;
   private scene: FlatMapScene;
+  private techTree: TechTreeScene | null = null;
   private currentFaction: FactionId = 'HEGEMON';
   
   // UI Elements
@@ -1008,28 +1010,43 @@ export class TheySingUI {
   }
 
   private showResearchModal(): void {
-    const vectors: Vector[] = ['KINETIC', 'INFO', 'LOGIC', 'MEMETIC'];
+    // Open the tech tree constellation view
+    this.openTechTree();
+  }
+
+  private openTechTree(): void {
+    if (this.techTree) return; // Already open
     
-    this.showModal(
-      'Research',
-      'Choose a domain to advance:',
-      vectors.map(v => ({
-        label: v,
-        action: () => {
-          const order: Order = {
-            id: `order_${Date.now()}`,
-            faction: this.currentFaction,
-            unitId: this.currentFaction, // Use faction as "unit" for research
-            type: 'RESEARCH',
-            techDomain: v,
-            priority: this.pendingOrders.length
-          };
-          this.pendingOrders.push(order);
-          this.updatePendingOrders();
-          this.hideModal();
-        }
-      }))
-    );
+    this.techTree = new TechTreeScene(this.container);
+    
+    this.techTree.onClose = () => {
+      this.techTree?.dispose();
+      this.techTree = null;
+    };
+    
+    this.techTree.onResearch = (techId: string) => {
+      // Map tech ID to domain for now
+      let domain: Vector = 'KINETIC';
+      if (techId.startsWith('i')) domain = 'INFO';
+      else if (techId.startsWith('l')) domain = 'LOGIC';
+      else if (techId.startsWith('m')) domain = 'MEMETIC';
+      
+      const order: Order = {
+        id: `order_${Date.now()}`,
+        faction: this.currentFaction,
+        unitId: this.currentFaction,
+        type: 'RESEARCH',
+        techDomain: domain,
+        priority: this.pendingOrders.length
+      };
+      this.pendingOrders.push(order);
+      this.updatePendingOrders();
+      
+      // Close tech tree after selecting research
+      this.techTree?.close();
+    };
+    
+    this.techTree.open();
   }
 
   private showBuildModal(nodeId: string): void {
