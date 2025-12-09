@@ -1,5 +1,3 @@
-
-
 // ============================================================================
 // ASI CARTEL - Three.js Globe Scene Manager
 // Handles 3D rendering, camera, raycasting, and unit visualization
@@ -47,6 +45,12 @@ export class GlobeScene {
   private unitMeshes: Map<string, UnitMesh> = new Map();
   private territoryMeshes: Map<string, TerritoryMesh> = new Map();
   private connectionLines: THREE.Line[] = [];
+  
+  // Kessler debris
+  private kesslerDebris?: {
+    points: THREE.Points;
+    velocities: Float32Array;
+  };
   
   // Interaction
   private raycaster: THREE.Raycaster;
@@ -113,6 +117,7 @@ export class GlobeScene {
     this.createStarfield();
     this.createGlobe();
     this.createAtmosphere();
+    this.createKesslerDebris();
     
     // Event listeners
     this.setupEventListeners();
@@ -200,24 +205,43 @@ export class GlobeScene {
   private createGlobe(): void {
     const geometry = new THREE.SphereGeometry(GLOBE_RADIUS, 64, 64);
     
-    // Base material (dark globe before texture loads)
-    const material = new THREE.MeshPhongMaterial({
-      color: 0x112233,
-      specular: 0x111122,
-      shininess: 5,
+    // Night globe base
+    const material = new THREE.MeshStandardMaterial({
+      color: 0x111820,
+      metalness: 0.1,
+      roughness: 0.9,
       transparent: true,
-      opacity: 0.95
+      opacity: 0.98,
+      emissive: new THREE.Color(0x224466),
+      emissiveIntensity: 0.25
     });
     
     this.globe = new THREE.Mesh(geometry, material);
     this.scene.add(this.globe);
     
-    // Load texture
+    // Load texture + city glow overlay
     const loader = new THREE.TextureLoader();
     loader.load('/textures/world.jpg', (texture) => {
       texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+      
       material.map = texture;
+      material.emissiveMap = texture;
+      material.emissiveIntensity = 0.65;
       material.needsUpdate = true;
+
+      // City lights glow shell
+      const glowMaterial = new THREE.MeshBasicMaterial({
+        map: texture,
+        color: 0x66aaff,
+        transparent: true,
+        opacity: 0.25,
+        blending: THREE.AdditiveBlending
+      });
+
+      const glowMesh = new THREE.Mesh(geometry, glowMaterial);
+      glowMesh.scale.setScalar(1.001);
+      this.scene.add(glowMesh);
     });
   }
 
@@ -255,6 +279,51 @@ export class GlobeScene {
     
     this.atmosphere = new THREE.Mesh(geometry, material);
     this.scene.add(this.atmosphere);
+  }
+
+  // ===========================================================================
+  // KESSLER DEBRIS
+  // ===========================================================================
+
+  private createKesslerDebris(): void {
+    const count = 1200;
+    const inner = GLOBE_RADIUS + 1.2;
+    const outer = GLOBE_RADIUS + 2.8;
+
+    const positions = new Float32Array(count * 3);
+    const velocities = new Float32Array(count * 3);
+
+    for (let i = 0; i < count; i++) {
+      const i3 = i * 3;
+      const r = inner + Math.random() * (outer - inner);
+      const t = Math.random() * Math.PI * 2;
+      const p = Math.acos(2 * Math.random() - 1);
+
+      positions[i3]     = r * Math.sin(p) * Math.cos(t);
+      positions[i3 + 1] = r * Math.cos(p);
+      positions[i3 + 2] = r * Math.sin(p) * Math.sin(t);
+
+      velocities[i3]     = -Math.sin(t) * 0.002;
+      velocities[i3 + 1] = (Math.random() - 0.5) * 0.0004;
+      velocities[i3 + 2] =  Math.cos(t) * 0.002;
+    }
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const mat = new THREE.PointsMaterial({
+      size: 0.04,
+      color: 0xffaa66,
+      transparent: true,
+      opacity: 0.5,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+
+    const points = new THREE.Points(geo, mat);
+    this.scene.add(points);
+
+    this.kesslerDebris = { points, velocities };
   }
 
   // ===========================================================================
@@ -304,11 +373,11 @@ export class GlobeScene {
     const geometry = this.getUnitGeometry(unit.type, size);
     
     const material = new THREE.MeshStandardMaterial({
-      color: faction.color,
-      emissive: faction.color,
-      emissiveIntensity: 0.4,
-      metalness: 0.7,
-      roughness: 0.3
+      color: 0x2b2f3a,
+      metalness: 0.6,
+      roughness: 0.35,
+      emissive: new THREE.Color(faction.color),
+      emissiveIntensity: 0.15
     });
     
     const mesh = new THREE.Mesh(geometry, material);
@@ -317,6 +386,22 @@ export class GlobeScene {
     mesh.rotateX(Math.PI / 2);
     mesh.userData = { unitId: unit.id, type: 'unit' };
     this.scene.add(mesh);
+
+    // StarCraft-style faction trim plate
+    const trimMat = new THREE.MeshStandardMaterial({
+      color: faction.color,
+      emissive: faction.color,
+      emissiveIntensity: 0.8,
+      metalness: 0.2,
+      roughness: 0.25
+    });
+
+    const trim = new THREE.Mesh(
+      new THREE.BoxGeometry(size * 0.25, size * 1.2, size * 0.25),
+      trimMat
+    );
+    trim.position.set(size * 0.6, 0, 0);
+    mesh.add(trim);
     
     // Glow effect
     const glowGeometry = new THREE.SphereGeometry(size * 1.5, 16, 16);
@@ -579,7 +664,7 @@ export class GlobeScene {
       const prevMesh = this.unitMeshes.get(this.hoveredUnitId);
       if (prevMesh) {
         const mat = prevMesh.mesh.material as THREE.MeshStandardMaterial;
-        mat.emissiveIntensity = 0.4;
+        mat.emissiveIntensity = 0.15;
       }
       this.hoveredUnitId = null;
     }
@@ -681,6 +766,19 @@ export class GlobeScene {
     // Update atmosphere shader
     const atmoMat = this.atmosphere.material as THREE.ShaderMaterial;
     atmoMat.uniforms.viewVector.value.copy(this.camera.position);
+
+    // Update Kessler debris
+    if (this.kesslerDebris) {
+      const posAttr = this.kesslerDebris.points.geometry
+        .attributes.position as THREE.BufferAttribute;
+      const vel = this.kesslerDebris.velocities;
+      for (let i = 0; i < vel.length; i += 3) {
+        posAttr.array[i]     += vel[i];
+        posAttr.array[i + 1] += vel[i + 1];
+        posAttr.array[i + 2] += vel[i + 2];
+      }
+      posAttr.needsUpdate = true;
+    }
     
     // Animate unit meshes
     for (const [_id, unitMesh] of this.unitMeshes) {
