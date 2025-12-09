@@ -181,57 +181,83 @@ export class FlatMapScene {
   // ==========================================================================
 
   private createMapBase(): void {
-    // Starfield background
+    // Starfield background - surrounding sphere
     this.createStarfield();
     
-    // Ocean plane
-    const oceanGeo = new THREE.PlaneGeometry(MAP_WIDTH * 1.5, MAP_HEIGHT * 1.5);
-    const oceanMat = new THREE.MeshBasicMaterial({ 
-      color: COLORS.ocean,
-      side: THREE.DoubleSide
+    // Earth texture map
+    const textureLoader = new THREE.TextureLoader();
+    const earthTexture = textureLoader.load('/textures/world.jpg', 
+      // On load - texture ready
+      (texture) => {
+        texture.wrapS = THREE.ClampToEdgeWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+        console.log('Earth texture loaded');
+      },
+      undefined,
+      // On error - fall back to colored plane
+      () => {
+        console.warn('Earth texture not found, using fallback');
+      }
+    );
+    
+    // Main earth plane with texture
+    const earthGeo = new THREE.PlaneGeometry(MAP_WIDTH * 1.4, MAP_HEIGHT * 1.4);
+    const earthMat = new THREE.MeshBasicMaterial({ 
+      map: earthTexture,
+      side: THREE.DoubleSide,
+      transparent: false
     });
-    const ocean = new THREE.Mesh(oceanGeo, oceanMat);
-    ocean.position.z = Z_OCEAN;
-    this.mapGroup.add(ocean);
+    const earth = new THREE.Mesh(earthGeo, earthMat);
+    earth.position.z = Z_OCEAN;
+    this.mapGroup.add(earth);
+    
+    // Dark overlay for better node visibility
+    const overlayGeo = new THREE.PlaneGeometry(MAP_WIDTH * 1.4, MAP_HEIGHT * 1.4);
+    const overlayMat = new THREE.MeshBasicMaterial({ 
+      color: 0x000020,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.4
+    });
+    const overlay = new THREE.Mesh(overlayGeo, overlayMat);
+    overlay.position.z = Z_OCEAN + 0.01;
+    this.mapGroup.add(overlay);
     
     // Grid lines
     this.createGrid();
-    
-    // Simple land masses (stylized)
-    this.createLandMasses();
   }
 
   private createStarfield(): void {
-    const starCount = 2000;
+    const starCount = 3000;
     const positions = new Float32Array(starCount * 3);
     const colors = new Float32Array(starCount * 3);
-    const sizes = new Float32Array(starCount);
     
     for (let i = 0; i < starCount; i++) {
-      // Spread stars in a large box behind the map
-      positions[i * 3] = (Math.random() - 0.5) * 200;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 200;
-      positions[i * 3 + 2] = Z_STARS + Math.random() * -50;
+      // Spread stars on a large sphere surrounding the scene
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const radius = 80 + Math.random() * 40;
       
-      // Slight color variation (white to blue-white)
-      const temp = 0.8 + Math.random() * 0.2;
+      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = radius * Math.cos(phi) - 20; // Offset so more visible above
+      
+      // Color variation (white to blue-white)
+      const temp = 0.7 + Math.random() * 0.3;
       colors[i * 3] = temp;
       colors[i * 3 + 1] = temp;
-      colors[i * 3 + 2] = 0.9 + Math.random() * 0.1;
-      
-      sizes[i] = 0.5 + Math.random() * 1.5;
+      colors[i * 3 + 2] = 0.85 + Math.random() * 0.15;
     }
     
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
     
     const material = new THREE.PointsMaterial({
-      size: 0.3,
+      size: 0.4,
       vertexColors: true,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.9,
       sizeAttenuation: true
     });
     
