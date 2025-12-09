@@ -185,21 +185,29 @@ export class TechTreeScene {
   private camera: THREE.PerspectiveCamera;
   private renderer: THREE.WebGLRenderer;
   private controls: OrbitControls;
-  
+  private clock = new THREE.Clock();
+
   private nodeMeshes: Map<string, THREE.Mesh> = new Map();
   private animationId: number = 0;
-  
+
   // UI elements
   private overlay: HTMLDivElement;
   private panel!: HTMLDivElement;
-  
+
   // Callbacks
   public onClose: (() => void) | null = null;
   public onResearch: ((techId: string) => void) | null = null;
 
+  // Background components
+  private nebulaMesh?: THREE.Mesh;
+  private nebulaMat?: THREE.ShaderMaterial;
+  private nebulaParticles: THREE.Points[] = [];
+  private starsA?: THREE.Points;
+  private starsB?: THREE.Points;
+
   constructor(container: HTMLElement) {
     this.container = container;
-    
+
     // Create overlay
     this.overlay = document.createElement('div');
     this.overlay.style.cssText = `
@@ -212,164 +220,443 @@ export class TechTreeScene {
       pointer-events: none;
     `;
     container.appendChild(this.overlay);
-    
+
     // Scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x020208);
-    this.scene.fog = new THREE.FogExp2(0x050510, 0.025);
-    
-    // Camera - start looking down, will pan up
+
+    // Softer fog — still gives depth without erasing stars
+    this.scene.fog = new THREE.FogExp2(0x050510, 0.010);
+
+    // Camera
     this.camera = new THREE.PerspectiveCamera(
       60,
       container.clientWidth / container.clientHeight,
       0.1,
-      1000
+      400
     );
     this.camera.position.set(0, -5, 8);
     this.camera.lookAt(0, 0, 0);
-    
+
     // Renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this.renderer.setSize(container.clientWidth, container.clientHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.overlay.appendChild(this.renderer.domElement);
-    
+
     // Controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.06;
     this.controls.autoRotate = true;
-    this.controls.autoRotateSpeed = 0.3;
+    this.controls.autoRotateSpeed = 0.25;
     this.controls.minDistance = 6;
     this.controls.maxDistance = 30;
-    this.controls.enabled = false; // Disabled until animation completes
-    
+    this.controls.enabled = false; // Disabled until ascent completes
+
     // Build scene
     this.setupLighting();
-    this.createStarfield();
+    this.createStarfield();        // ✅ procedural swirl + stars
+    this.createNebulaParticles();  // ✅ ensure these exist
     this.createNodes();
     this.createLinks();
     this.createUI();
+
+    // Resize handling
+    window.addEventListener('resize', this.onResize);
   }
 
+  private onResize = () => {
+    const w = this.container.clientWidth;
+    const h = this.container.clientHeight;
+    if (!w || !h) return;
+
+    this.camera.aspect = w / h;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(w, h);
+  };
+
   private setupLighting(): void {
-    const ambient = new THREE.AmbientLight(0xffffff, 0.3);
+    const ambient = new THREE.AmbientLight(0xffffff, 0.28);
     this.scene.add(ambient);
-    
-    const key = new THREE.DirectionalLight(0x88ccff, 0.8);
+
+    const key = new THREE.DirectionalLight(0x88ccff, 0.75);
     key.position.set(5, 10, 8);
     this.scene.add(key);
-    
-    const fill = new THREE.DirectionalLight(0xff8866, 0.3);
+
+    const fill = new THREE.DirectionalLight(0xff8866, 0.25);
     fill.position.set(-5, -5, -5);
     this.scene.add(fill);
   }
 
+  // ===========================================================================
+  // BACKGROUND: Procedural Nebula Swirl + Stars (NO TEXTURE)
+  // ===========================================================================
+
   private createStarfield(): void {
-    // Nebula background sphere
-    const textureLoader = new THREE.TextureLoader();
-    const nebulaTexture = textureLoader.load('/textures/nebula.jpg');
-    const nebulaGeo = new THREE.SphereGeometry(90, 32, 32);
-    const nebulaMat = new THREE.MeshBasicMaterial({
-      map: nebulaTexture,
+    // Ensure far plane can see our background shell
+    if (this.camera.far < 220) {
+      this.camera.far = 400;
+      this.camera.updateProjectionMatrix();
+    }
+
+    // -----------------------------
+    // 1) Procedural Nebula Sphere
+    // -----------------------------
+    const nebulaGeo = new THREE.SphereGeometry(120, 96, 96);
+
+    const nebulaMat = new THREE.ShaderMaterial({
+      uniforms: {
+        time: { value: 0 },
+        intensity: { value: 0.9 },
+        colorA: { value: new THREE.Color(0x06121f) }, // deep navy
+        colorB: { value: new THREE.Color(0x0b3b74) }, // blue core
+        colorC: { value: new THREE.Color(0x2a7bd6) }, // bright mist
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vPos;
+        void main() {
+          vUv = uv;
+          vPos = position;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float time;
+        uniform float intensity;
+        uniform vec3 colorA;
+        uniform vec3 colorB;
+        uniform vec3 colorC;
+
+        varying vec2 vUv;
+        varying vec3 vPos;
+
+        // --- soft value noise ---
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+        }
+
+        float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          float a = hash(i);
+          float b = hash(i + vec2(1.0, 0.0));
+          float c = hash(i + vec2(0.0, 1.0));
+          float d = hash(i + vec2(1.0, 1.0));
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(a, b, u.x) +
+                 (c - a) * u.y * (1.0 - u.x) +
+                 (d - b) * u.x * u.y;
+        }
+
+        float fbm(vec2 p) {
+          float v = 0.0;
+          float a = 0.5;
+          for (int i = 0; i < 5; i++) {
+            v += a * noise(p);
+            p *= 2.0;
+            a *= 0.5;
+          }
+          return v;
+        }
+
+        // simple domain warp
+        vec2 warp(vec2 uv, float t) {
+          float n1 = fbm(uv * 2.2 + vec2(0.0, t));
+          float n2 = fbm(uv * 2.2 + vec2(t, 0.0));
+          return uv + vec2(n1 - 0.5, n2 - 0.5) * 0.10;
+        }
+
+        void main() {
+          vec2 uv = vUv;
+
+          // Slow time
+          float t = time * 0.03;
+
+          // Two-stage warp for smooth swirls
+          uv = warp(uv, t);
+          uv = warp(uv, -t * 0.7);
+
+          // Soft clouds
+          float c1 = fbm(uv * 2.0 + t * 0.3);
+          float c2 = fbm(uv * 4.0 - t * 0.2);
+          float cloud = c1 * 0.65 + c2 * 0.35;
+
+          // Edge falloff (so it doesn't look like a flat wallpaper)
+          float radial = 1.0 - smoothstep(0.0, 0.9,
+            distance(uv, vec2(0.5, 0.5)) * 1.15
+          );
+
+          float density = cloud * radial;
+
+          // Color blend
+          vec3 col = mix(colorA, colorB, smoothstep(0.15, 0.75, density));
+          col = mix(col, colorC, smoothstep(0.45, 0.95, density));
+
+          // Alpha curve: soft, cinematic
+          float alpha = smoothstep(0.08, 0.85, density) * 0.35 * intensity;
+
+          gl_FragColor = vec4(col, alpha);
+        }
+      `,
       side: THREE.BackSide,
       transparent: true,
-      opacity: 0.2,
+      depthWrite: false,
+      blending: THREE.NormalBlending,
     });
+
+    nebulaMat.fog = false;
+
     const nebula = new THREE.Mesh(nebulaGeo, nebulaMat);
+    nebula.renderOrder = -20;
     this.scene.add(nebula);
-    
-    // Stars on top
-    const starCount = 1500;
+
+    this.nebulaMesh = nebula;
+    this.nebulaMat = nebulaMat;
+
+    // -----------------------------
+    // 2) Star sprite (procedural)
+    // -----------------------------
+    const starSprite = this.makeStarSpriteTexture();
+
+    // -----------------------------
+    // 3) Stars layer A (dense)
+    // -----------------------------
+    const starCount = 2800;
     const positions = new Float32Array(starCount * 3);
-    
+    const colors = new Float32Array(starCount * 3);
+
     for (let i = 0; i < starCount; i++) {
+      const i3 = i * 3;
+
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      const radius = 40 + Math.random() * 40;
-      
-      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[i * 3 + 2] = radius * Math.cos(phi);
+
+      const radius = 140 + Math.random() * 80;
+
+      positions[i3]     = radius * Math.sin(phi) * Math.cos(theta);
+      positions[i3 + 1] = radius * Math.cos(phi);
+      positions[i3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+
+      // Slight temperature variance
+      const base = 0.65 + Math.random() * 0.35;
+      const warm = Math.random() * 0.08;
+      const cool = Math.random() * 0.12;
+
+      colors[i3]     = Math.min(1, base + warm);
+      colors[i3 + 1] = base;
+      colors[i3 + 2] = Math.min(1, base + cool);
     }
-    
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    
-    const material = new THREE.PointsMaterial({
-      size: 0.08,
-      color: 0x99bbdd,
+
+    const starGeo = new THREE.BufferGeometry();
+    starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    starGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const starMat = new THREE.PointsMaterial({
+      size: 1.45,
+      map: starSprite,
       transparent: true,
-      opacity: 0.9,
+      alphaTest: 0.08,
+      opacity: 0.95,
+      vertexColors: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true,
     });
-    
-    const stars = new THREE.Points(geometry, material);
-    this.scene.add(stars);
-    
-    // Swirling nebula particle clouds
-    this.createNebulaParticles();
+    starMat.fog = false;
+
+    const starsA = new THREE.Points(starGeo, starMat);
+    starsA.renderOrder = -10;
+    this.scene.add(starsA);
+    this.starsA = starsA;
+
+    // -----------------------------
+    // 4) Stars layer B (hero)
+    // -----------------------------
+    const bigCount = 360;
+    const bigPos = new Float32Array(bigCount * 3);
+    const bigCol = new Float32Array(bigCount * 3);
+
+    for (let i = 0; i < bigCount; i++) {
+      const i3 = i * 3;
+
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const radius = 170 + Math.random() * 120;
+
+      bigPos[i3]     = radius * Math.sin(phi) * Math.cos(theta);
+      bigPos[i3 + 1] = radius * Math.cos(phi);
+      bigPos[i3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+
+      const base = 0.85 + Math.random() * 0.15;
+      bigCol[i3]     = base;
+      bigCol[i3 + 1] = base;
+      bigCol[i3 + 2] = 1.0;
+    }
+
+    const bigGeo = new THREE.BufferGeometry();
+    bigGeo.setAttribute('position', new THREE.BufferAttribute(bigPos, 3));
+    bigGeo.setAttribute('color', new THREE.BufferAttribute(bigCol, 3));
+
+    const bigMat = new THREE.PointsMaterial({
+      size: 2.25,
+      map: starSprite,
+      transparent: true,
+      alphaTest: 0.08,
+      opacity: 0.9,
+      vertexColors: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true,
+    });
+    bigMat.fog = false;
+
+    const starsB = new THREE.Points(bigGeo, bigMat);
+    starsB.renderOrder = -9;
+    this.scene.add(starsB);
+    this.starsB = starsB;
   }
 
-  private nebulaParticles: THREE.Points[] = [];
+  private makeStarSpriteTexture(): THREE.Texture {
+    const size = 96;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+
+    const ctx = canvas.getContext('2d')!;
+    const cx = size / 2;
+    const cy = size / 2;
+
+    // Soft core + gentle cross bloom
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, size * 0.5);
+    grad.addColorStop(0.0, 'rgba(255,255,255,1)');
+    grad.addColorStop(0.18, 'rgba(255,255,255,0.95)');
+    grad.addColorStop(0.45, 'rgba(180,210,255,0.35)');
+    grad.addColorStop(1.0, 'rgba(0,0,0,0)');
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, size, size);
+
+    // Subtle four-ray sparkle (very faint)
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, 8);
+    ctx.lineTo(cx, size - 8);
+    ctx.moveTo(8, cy);
+    ctx.lineTo(size - 8, cy);
+    ctx.stroke();
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.generateMipmaps = true;
+
+    try {
+      tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+    } catch {}
+
+    return tex;
+  }
+
+  // ===========================================================================
+  // NEBULA PARTICLES (foreground swirls)
+  // ===========================================================================
 
   private createNebulaParticles(): void {
-    // Multiple layers of colored particles that will rotate
+    const dustSprite = this.makeNebulaDustSpriteTexture();
+
+    const t = this.nebulaMat?.uniforms.time.value ?? 0;
+      this.nebulaParticles.forEach((p, i) => {
+        const s = p.userData.rotationSpeed || 0;
+        p.rotation.y += s * (delta * 60);
+        p.rotation.x += s * 0.3 * (delta * 60);
+
+        const pulse = 1 + Math.sin(t * 0.8 + i) * 0.003;
+        p.scale.setScalar(pulse);
+      });
+
+
     const layers = [
-      { count: 300, color: 0x4488ff, radius: 15, speed: 0.0003, opacity: 0.3 },
-      { count: 200, color: 0x66ffcc, radius: 20, speed: -0.0002, opacity: 0.25 },
-      { count: 250, color: 0xff66aa, radius: 18, speed: 0.00025, opacity: 0.2 },
-      { count: 150, color: 0xffaa44, radius: 25, speed: -0.00015, opacity: 0.15 },
+      { count: 520, color: 0x4c8dff, radius: 14, speed: 0.00022, opacity: 0.16, size: 1.15 },
+      { count: 420, color: 0x66ffd9, radius: 19, speed: -0.00018, opacity: 0.13, size: 1.25 },
+      { count: 460, color: 0xff7bc1, radius: 17, speed: 0.00020, opacity: 0.12, size: 1.10 },
+      { count: 320, color: 0xffb36a, radius: 24, speed: -0.00014, opacity: 0.10, size: 1.35 },
     ];
-    
+
     layers.forEach((layer, idx) => {
       const positions = new Float32Array(layer.count * 3);
-      const sizes = new Float32Array(layer.count);
-      
+
       for (let i = 0; i < layer.count; i++) {
-        // Spiral distribution
         const t = i / layer.count;
-        const spiralAngle = t * Math.PI * 6 + idx * 1.5;
-        const r = layer.radius * (0.3 + t * 0.7);
-        const wobble = Math.sin(t * 20) * 2;
-        
-        positions[i * 3] = Math.cos(spiralAngle) * r + wobble;
-        positions[i * 3 + 1] = (t - 0.5) * 12 + Math.sin(spiralAngle * 2) * 2;
-        positions[i * 3 + 2] = Math.sin(spiralAngle) * r + wobble;
-        
-        sizes[i] = 0.3 + Math.random() * 0.5;
+
+        // Base spiral
+        const baseTurns = 6.0 + idx * 0.35;
+        const spiralAngle = t * Math.PI * baseTurns + idx * 1.2;
+
+        // Jitter to "fill" the band
+        const angleJitter = (Math.random() - 0.5) * 0.18;
+        const radiusJitter = (Math.random() - 0.5) * 1.2;
+
+        const r = layer.radius * (0.22 + t * 0.78) + radiusJitter;
+
+        const wobble =
+          Math.sin(t * 18 + idx) * 1.1 +
+          Math.sin(t * 7 + idx * 2.0) * 0.7;
+
+        const a = spiralAngle + angleJitter;
+
+        positions[i * 3]     = Math.cos(a) * r + wobble * 0.35;
+        positions[i * 3 + 1] = (t - 0.5) * 10 + Math.sin(a * 1.6) * 1.2 + (Math.random() - 0.5) * 0.6;
+        positions[i * 3 + 2] = Math.sin(a) * r + wobble * 0.35;
       }
-      
+
       const geometry = new THREE.BufferGeometry();
       geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-      
+
       const material = new THREE.PointsMaterial({
-        size: 0.4,
+        size: layer.size,
         color: layer.color,
+        map: dustSprite,
         transparent: true,
         opacity: layer.opacity,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
+        alphaTest: 0.02,
+        sizeAttenuation: true,
       });
-      
+
+      material.fog = false;
+
       const particles = new THREE.Points(geometry, material);
       particles.userData.rotationSpeed = layer.speed;
+
       this.scene.add(particles);
       this.nebulaParticles.push(particles);
     });
   }
 
-  private updateNebulaParticles(): void {
+
+  private updateNebulaParticles(delta: number): void {
+    // Use delta to keep motion consistent across FPS
     this.nebulaParticles.forEach(particles => {
-      particles.rotation.y += particles.userData.rotationSpeed;
-      particles.rotation.x += particles.userData.rotationSpeed * 0.3;
+      const s = particles.userData.rotationSpeed || 0;
+      particles.rotation.y += s * (delta * 60);
+      particles.rotation.x += s * 0.3 * (delta * 60);
     });
   }
+
+  // ===========================================================================
+  // NODES & LINKS
+  // ===========================================================================
 
   private createNodes(): void {
     TECH_NODES.forEach((node) => {
       const color = DOMAIN_COLORS[node.domain] || 0xffffff;
-      
+
       const geometry = new THREE.SphereGeometry(0.2 + node.level * 0.05, 20, 20);
       const material = new THREE.MeshStandardMaterial({
         color,
@@ -378,13 +665,14 @@ export class TechTreeScene {
         metalness: 0.3,
         roughness: 0.4,
       });
-      
+
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.copy(node.pos);
       mesh.userData = { nodeId: node.id, node };
+
       this.scene.add(mesh);
       this.nodeMeshes.set(node.id, mesh);
-      
+
       // Orbital ring
       const ringGeometry = new THREE.RingGeometry(
         0.35 + node.level * 0.06,
@@ -397,9 +685,12 @@ export class TechTreeScene {
         opacity: 0.3,
         side: THREE.DoubleSide,
       });
+      ringMaterial.fog = false;
+
       const ring = new THREE.Mesh(ringGeometry, ringMaterial);
       ring.position.copy(node.pos);
       ring.lookAt(this.camera.position);
+
       this.scene.add(ring);
     });
   }
@@ -409,7 +700,7 @@ export class TechTreeScene {
       const a = this.nodeMeshes.get(aId);
       const b = this.nodeMeshes.get(bId);
       if (!a || !b) return;
-      
+
       const geometry = new THREE.BufferGeometry().setFromPoints([
         a.position,
         b.position,
@@ -419,10 +710,15 @@ export class TechTreeScene {
         transparent: true,
         opacity: 0.6,
       });
+
       const line = new THREE.Line(geometry, material);
       this.scene.add(line);
     });
   }
+
+  // ===========================================================================
+  // UI
+  // ===========================================================================
 
   private createUI(): void {
     // Title
@@ -440,7 +736,7 @@ export class TechTreeScene {
     `;
     title.textContent = 'NOOSPHERE CONSTELLATION /// RESEARCH TREE';
     this.overlay.appendChild(title);
-    
+
     // Back button
     const backBtn = document.createElement('button');
     backBtn.style.cssText = `
@@ -467,7 +763,7 @@ export class TechTreeScene {
       backBtn.style.background = 'rgba(10, 20, 40, 0.9)';
     });
     this.overlay.appendChild(backBtn);
-    
+
     // Tech detail panel
     this.panel = document.createElement('div');
     this.panel.style.cssText = `
@@ -521,7 +817,7 @@ export class TechTreeScene {
       </button>
     `;
     this.overlay.appendChild(this.panel);
-    
+
     // Click handling
     this.renderer.domElement.addEventListener('pointerdown', (e) => this.onPointerDown(e));
   }
@@ -532,13 +828,13 @@ export class TechTreeScene {
       ((event.clientX - rect.left) / rect.width) * 2 - 1,
       -((event.clientY - rect.top) / rect.height) * 2 + 1
     );
-    
+
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, this.camera);
-    
+
     const meshes = Array.from(this.nodeMeshes.values());
     const intersects = raycaster.intersectObjects(meshes, false);
-    
+
     if (intersects.length > 0) {
       const mesh = intersects[0].object as THREE.Mesh;
       const node = mesh.userData.node as TechNode;
@@ -553,23 +849,23 @@ export class TechTreeScene {
     const flopsEl = this.panel.querySelector('#tech-flops') as HTMLElement;
     const heatEl = this.panel.querySelector('#tech-heat') as HTMLElement;
     const researchBtn = this.panel.querySelector('#research-btn') as HTMLButtonElement;
-    
+
     nameEl.textContent = node.name;
     domainEl.textContent = node.domain;
     domainEl.style.borderColor = `#${DOMAIN_COLORS[node.domain]?.toString(16) || 'ffffff'}`;
     descEl.textContent = node.description;
     flopsEl.textContent = String(node.costFlops);
     heatEl.textContent = String(node.costHeat);
-    
+
     researchBtn.disabled = false;
     researchBtn.style.opacity = '1';
     researchBtn.onclick = () => {
       this.onResearch?.(node.id);
     };
-    
-    // Zoom toward node
+
+    // Soft zoom toward node
     const target = node.pos.clone().add(new THREE.Vector3(0, 0, 6));
-    this.camera.position.lerp(target, 0.3);
+    this.camera.position.lerp(target, 0.25);
   }
 
   // ===========================================================================
@@ -578,16 +874,16 @@ export class TechTreeScene {
 
   public open(): void {
     this.overlay.style.pointerEvents = 'auto';
-    
+
     // Fade in
     requestAnimationFrame(() => {
       this.overlay.style.opacity = '1';
     });
-    
+
     // Start animation loop
     this.animate();
-    
-    // Pan camera upward (Platonic ascent)
+
+    // Camera ascent
     this.animateCameraAscent();
   }
 
@@ -596,41 +892,38 @@ export class TechTreeScene {
     const endPos = new THREE.Vector3(0, 8, 18);
     const startLookAt = new THREE.Vector3(0, -2, 0);
     const endLookAt = new THREE.Vector3(0, 2, 0);
-    
+
     let t = 0;
-    const duration = 2000; // 2 seconds
+    const duration = 2000;
     const startTime = performance.now();
-    
+
     const animateAscent = () => {
       const elapsed = performance.now() - startTime;
       t = Math.min(1, elapsed / duration);
-      
-      // Ease out cubic
+
       const ease = 1 - Math.pow(1 - t, 3);
-      
+
       this.camera.position.lerpVectors(startPos, endPos, ease);
-      
+
       const lookAt = new THREE.Vector3().lerpVectors(startLookAt, endLookAt, ease);
       this.camera.lookAt(lookAt);
-      
+
       if (t < 1) {
         requestAnimationFrame(animateAscent);
       } else {
-        // Enable controls after ascent
         this.controls.target.copy(endLookAt);
         this.controls.enabled = true;
       }
     };
-    
+
     animateAscent();
   }
 
   public close(): void {
     this.controls.enabled = false;
-    
-    // Fade out
+
     this.overlay.style.opacity = '0';
-    
+
     setTimeout(() => {
       this.overlay.style.pointerEvents = 'none';
       cancelAnimationFrame(this.animationId);
@@ -638,15 +931,74 @@ export class TechTreeScene {
     }, 500);
   }
 
+  private makeNebulaDustSpriteTexture(): THREE.Texture {
+  const size = 128;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+
+  const ctx = canvas.getContext('2d')!;
+  const cx = size / 2;
+  const cy = size / 2;
+
+  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, size * 0.5);
+  grad.addColorStop(0.0, 'rgba(255,255,255,0.9)');
+  grad.addColorStop(0.25, 'rgba(255,255,255,0.35)');
+  grad.addColorStop(0.6, 'rgba(255,255,255,0.1)');
+  grad.addColorStop(1.0, 'rgba(0,0,0,0)');
+
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, size, size);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  tex.generateMipmaps = true;
+
+  try {
+    tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+  } catch {}
+
+  return tex;
+}
+
+
+  // ===========================================================================
+  // ANIMATION LOOP
+  // ===========================================================================
+
   private animate(): void {
     this.animationId = requestAnimationFrame(() => this.animate());
+
+    const delta = this.clock.getDelta();
+
     this.controls.update();
-    this.updateNebulaParticles();
+
+    // Nebula shader time
+    if (this.nebulaMat) {
+      this.nebulaMat.uniforms.time.value += delta;
+    }
+
+    // Very slow drift
+    if (this.nebulaMesh) {
+      this.nebulaMesh.rotation.y += 0.000035 * (delta * 60);
+      this.nebulaMesh.rotation.x += 0.00001 * (delta * 60);
+    }
+
+    // Slight starfield parallax
+    if (this.starsA) this.starsA.rotation.y += 0.00002 * (delta * 60);
+    if (this.starsB) this.starsB.rotation.y -= 0.000015 * (delta * 60);
+
+    this.updateNebulaParticles(delta);
+
     this.renderer.render(this.scene, this.camera);
   }
 
   public dispose(): void {
     cancelAnimationFrame(this.animationId);
+    window.removeEventListener('resize', this.onResize);
+
     this.renderer.dispose();
     this.overlay.remove();
   }
