@@ -7,6 +7,9 @@ import { TheySingEngine } from './engine/TheySingEngine';
 import { FlatMapScene } from './three/FlatMapScene';
 import { TheySingUI } from './ui/TheySingUI';
 import { FactionId } from './engine/types';
+import { GlobeScene } from './three/GlobeScene';
+import { GraphScene } from './three/GraphScene';
+
 
 // ============================================================================
 // INITIALIZATION
@@ -29,10 +32,26 @@ function init() {
   const engine = new TheySingEngine();
 
   // Initialize 3D scene (flat map with orbital Z-layer)
-  const scene = new FlatMapScene(container, engine);
+  // --- Create layered containers ---
+  const globeLayer = document.createElement('div');
+  const graphLayer = document.createElement('div');
+  const flatLayer  = document.createElement('div');
 
-  // Initialize UI
-  const ui = new TheySingUI(container, engine, scene);
+  [globeLayer, graphLayer, flatLayer].forEach((layer, i) => {
+    layer.style.position = 'absolute';
+    layer.style.inset = '0';
+    layer.style.pointerEvents = i === 2 ? 'auto' : 'none'; // UI + selection only on top
+    container.appendChild(layer);
+  });
+
+  // --- Instantiate scenes ---
+  const globeScene = new GlobeScene(globeLayer);
+  const graphScene = new GraphScene(graphLayer, engine);
+  const flatScene  = new FlatMapScene(flatLayer, engine);
+
+  // --- UI binds to the topmost interactive scene ---
+  const ui = new TheySingUI(container, engine, flatScene);
+
 
   // Default to HEGEMON faction
   ui.setFaction('HEGEMON');
@@ -123,7 +142,9 @@ function init() {
   // ============================================================================
 
   (window as any).engine = engine;
-  (window as any).scene = scene;
+  (window as any).globeScene = globeScene;
+  (window as any).graphScene = graphScene;
+  (window as any).flatScene  = flatScene;
   (window as any).ui = ui;
 
   // ============================================================================

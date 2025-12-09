@@ -121,7 +121,11 @@ export class FlatMapScene {
     this.updateCameraPosition();
     
     // Renderer
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true
+    });
+    this.renderer.setClearColor(0x000000, 0); // IMPORTANT
     this.renderer.setSize(container.clientWidth, container.clientHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(this.renderer.domElement);
