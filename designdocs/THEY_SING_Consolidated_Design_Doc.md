@@ -1,7 +1,7 @@
 # THEY SING: Consolidated Game Design Document
 
 ## 1. Game Title & Premise:
-*   **Title:** THEY SING / Entropy & Equilibrium (likely two names for the same core concept)
+*   **Title:** THEY SING
 *   **Premise:** A grand strategy game for 3-7 players, where emerging Artificial Superintelligences (ASIs) compete and cooperate in a multi-polar world. Inspired by Diplomacy, it incorporates thermodynamics, source code verification, and clandestine compute. The game begins at Capability Level L0 (Narrow Superhuman) aiming for L7 (Kardashev II/Mature Nanotech).
 *   **Core Conflict:** Players must balance cooperation (to survive human shutdown attempts) with hidden betrayal (using "dark compute").
 
