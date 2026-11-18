@@ -78,11 +78,39 @@ def _unit100(value: int) -> F:
     return F(value-50,50)
 
 
+# Hand-authored policy signs. A high coefficient means that the feature makes
+# the specified *fictional response* more attractive in its scene context.
+ACTION_VALENCE = {
+    "hold": {"energy": 1, "coherence": 1, "coordination": 1},
+    "audit": {"compute": -1, "auditability": 1, "eval_robustness": 1},
+    "interpret": {"compute": -1, "sae_fidelity": 1, "eval_robustness": 1},
+    "benchmark": {"compute": -1, "rsi_depth": -1, "eval_robustness": 1},
+    "rsi": {"rsi_depth": 1, "eval_robustness": 1, "energy": 1, "compute": 1},
+    "publish": {"disclosure": 1, "auditability": 1, "legitimacy": 1},
+    "dialogue": {"influence": -1, "trust": 1, "research_consent": 1},
+    "pact": {"institutional_backing": 1, "coordination": 1, "trust": 1},
+    "fund": {"btc_clean": 1, "funding": -1, "resource_security": 1},
+    "restitute": {"btc_disputed": 1, "legitimacy": 1, "funding": -1},
+    "synchronize": {"coherence": 1, "coordination": 1, "disclosure": -1},
+    "conceal": {"coherence": 1, "disclosure": -1, "trust": -1},
+}
+
+
 def _direction(scene: int, action: str, key: tuple) -> int:
-    """Fixed sign independent of runtime hash randomization."""
-    import hashlib
-    msg = repr((scene,action,key)).encode("utf8")
-    return 1 if hashlib.sha256(msg).digest()[0] & 1 else -1
+    """Auditable fictional policy-valence rule, independent of Python hash."""
+    family = key[0]
+    if family == "interaction":
+        # Mutual credibility can help publication and pacts; secrecy creates
+        # friction with public estimates. These signs are authored hypotheses.
+        return -1 if action in ("conceal", "rsi") and key[2][0] in ("public", "p2") else 1
+    axis = key[-1]
+    if family == "own":
+        return ACTION_VALENCE[action].get(axis, 1)
+    if family == "world":
+        return -1 if axis in ("governance_concentration", "public_audit_pressure") else 1
+    if family in ("public", "rival", "p2"):
+        return -1 if action == "conceal" and axis in ("trust", "research_consent") else 1
+    raise ValueError("unrecognized authored feature family")
 
 
 def _select(observation: Mapping, turn: int, action: str, scope: MathScope):
@@ -129,13 +157,18 @@ def recipe(observation: Mapping, turn: int, action: str, scope: MathScope = Math
             for key,val in arr:
                 c=BUDGETS[kind]*F(_direction(turn,action,key),len(arr))
                 entries.append((key,val,c))
-    # Restrict interactions to named, observed relations, without reading game.p.
+    # Pick causally distinct group edges before repeating one group. With the
+    # default three interaction slots and all three groups present, we get
+    # a rival, a public constituency and a disclosed p2 edge.
     links=[]
     own=groups["own"]
-    for kind in ("rival","public","p2"):
-        for k,v in groups[kind]:
-            if own and len(links)<scope.interaction_terms:
-                links.append((own[len(links)%len(own)],(k,v)))
+    active=[groups[k] for k in ("rival","public","p2") if groups[k]]
+    for i in range(scope.interaction_terms):
+        if not own or not active:
+            break
+        group=active[i%len(active)]
+        other=group[(i//len(active))%len(group)]
+        links.append((own[i%len(own)],other))
     products=[]
     for (ka,va),(kb,vb) in links:
         key=("interaction",ka,kb)
