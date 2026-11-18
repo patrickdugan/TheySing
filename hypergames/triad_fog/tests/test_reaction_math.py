@@ -61,6 +61,13 @@ class ScopedMathTests(unittest.TestCase):
         with self.assertRaises(ValueError):recipe(view,1,'steal')
         with self.assertRaises(ValueError):MathScope(own_vars=70).validate()
         with self.assertRaises(ValueError):dirac_squared(((('sealed','x','y'),F(1)),))
+    def test_interaction_allocates_distinct_legal_belief_families(self):
+        view=TriadGame.new(2026111801).visible('MERIDIAN')
+        r=recipe(view,9,'hold')
+        self.assertGreater(r['groups']['p2'],0)
+        self.assertEqual([key[2][0] for key,_,_ in r['terms'] if key[0]=='interaction'],
+                         ['rival','public','p2'])
+
     def test_existing_hypergame_checksum_unchanged(self):
         a=TriadGame.new(17); b=TriadGame.new(17)
         self.assertEqual(a.visible('MERIDIAN'),b.visible('MERIDIAN'))
