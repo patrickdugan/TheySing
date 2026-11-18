@@ -110,6 +110,8 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--out',type=Path,default=ROOT/'artifacts')
     ap.add_argument('--check',action='store_true')
+    ap.add_argument('--check-compatible',action='store_true',
+                    help='verify frozen 480/4800 data with an explicit SKILL.md source-hash exception')
     args=ap.parse_args()
     rows,turns=generate()
     report=aggregate(rows,turns)
@@ -120,7 +122,7 @@ def main():
     report['data_sha256']={name:digest(payload) for name,payload in sorted(outputs.items())}
     report['all_passed']=all(report['integrity'].values())
     outputs['summary.json']=(json.dumps(report,sort_keys=True,indent=2)+'\n').encode('utf8')
-    if args.check:
+    if args.check or args.check_compatible:
         # The 4,800-turn journal is archived as a CI artifact and downloadable
         # ZIP rather than duplicating ~2MB of verbose rows in Git. Its SHA-256
         # remains immutable in the committed summary and is checked by replay.
@@ -130,6 +132,20 @@ def main():
                 stored=json.loads((args.out/'summary.json').read_text('utf8'))
                 if stored['data_sha256'][name]!=digest(payload):
                     raise SystemExit('Replay SHA mismatch: '+name)
+            elif name=='summary.json' and args.check_compatible and target.is_file():
+                # Historical summary retains the original exact source hashes.
+                # The only registered edited source is the skill describing
+                # TS-HG-03; the engine, evaluator, policies and frozen data
+                # must still match their original receipt exactly.
+                current=json.loads(payload)
+                archived=json.loads(target.read_text('utf8'))
+                current_sources=current.pop('source_sha256')
+                archived_sources=archived.pop('source_sha256')
+                changed={k for k in set(current_sources)|set(archived_sources)
+                         if current_sources.get(k)!=archived_sources.get(k)}
+                if current!=archived or not changed.issubset({'SKILL.md'}):
+                    raise SystemExit('TS-HG-01 data or unregistered source changed: '+repr(changed))
+                print('Original 480/4800 replay data reproduced; acknowledged skill source edit: '+repr(sorted(changed)))
             elif not target.is_file() or target.read_bytes()!=payload:
                 raise SystemExit('Replay mismatch: '+str(target))
     else:
