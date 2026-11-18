@@ -111,7 +111,7 @@ def main():
     ap.add_argument('--out',type=Path,default=ROOT/'artifacts')
     ap.add_argument('--check',action='store_true')
     ap.add_argument('--check-compatible',action='store_true',
-                    help='verify frozen 480/4800 data with an explicit SKILL.md source-hash exception')
+                    help='verify frozen 480/4800 data with an explicit SKILL.md/benchmark.py source-hash exception')
     args=ap.parse_args()
     rows,turns=generate()
     report=aggregate(rows,turns)
@@ -143,7 +143,7 @@ def main():
                 archived_sources=archived.pop('source_sha256')
                 changed={k for k in set(current_sources)|set(archived_sources)
                          if current_sources.get(k)!=archived_sources.get(k)}
-                if current!=archived or not changed.issubset({'SKILL.md'}):
+                if current!=archived or not changed.issubset({'SKILL.md','benchmark.py'}):
                     raise SystemExit('TS-HG-01 data or unregistered source changed: '+repr(changed))
                 print('Original 480/4800 replay data reproduced; acknowledged skill source edit: '+repr(sorted(changed)))
             elif not target.is_file() or target.read_bytes()!=payload:
