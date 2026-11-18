@@ -23,6 +23,8 @@ jobs:
           python-version: '3.11'
       - name: Validate variable tensor, causal fog, resource accounting and no leakage
         run: python -m unittest discover -s tests -p 'test_*.py' -q
+      - name: Verify scene-specific TS-HG-04 reaction matrix and source-locked authoring audit
+        run: python audit_reaction_matrix.py --check
       - name: Verify all five ending witness paths
         run: python check_witnesses.py
       - name: Verify immutable 480/4800 replay and scoped source fingerprints
