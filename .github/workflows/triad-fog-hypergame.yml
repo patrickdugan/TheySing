@@ -25,6 +25,12 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_*.py' -q
       - name: Verify scene-specific TS-HG-04 reaction matrix and source-locked authoring audit
         run: python audit_reaction_matrix.py --check
+      - name: Verify recorded TS-HG05 model decisions and exact replay
+        if: ${{ hashFiles('hypergames/triad_fog/artifacts/tshg05_pilot_logs.zip') != '' }}
+        run: |
+          python -m zipfile -e artifacts/tshg05_pilot_logs.zip "$RUNNER_TEMP/tshg05"
+          python verify_pilot_transport.py --root "$RUNNER_TEMP/tshg05" > "$RUNNER_TEMP/tshg05_transport_receipt.json"
+          python audit_live_rollout.py --runs "$RUNNER_TEMP/tshg05/runs" --out artifacts/tshg05_analysis --require-registered-roster --check
       - name: Verify all five ending witness paths
         run: python check_witnesses.py
       - name: Verify immutable 480/4800 replay and scoped source fingerprints
@@ -35,4 +41,13 @@ jobs:
         with:
           name: triad-fog-480-episode-public-replay
           path: ${{ runner.temp }}/triad-fog/
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('hypergames/triad_fog/artifacts/tshg05_pilot_logs.zip') != '' }}
+        with:
+          name: triad-fog-tshg05-live-pilot
+          path: |
+            hypergames/triad_fog/artifacts/tshg05_pilot_logs.zip
+            hypergames/triad_fog/artifacts/tshg05_analysis/
+            hypergames/triad_fog/TSHG05_RESULTS.md
           retention-days: 30
