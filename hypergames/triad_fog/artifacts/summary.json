@@ -285,7 +285,7 @@
   "schema": "TS-HG-01/synthetic-CPU-v1",
   "source_sha256": {
     "PROTOCOL.md": "ebe0d4b08bddf7369e03c8dcb1f53dfe7e753343ac8e3dd07685ab32fbf8cd21",
-    "README.md": "c0be80608cac3c3c3db06716f4dfb7202d9b681f2ecb89c27975a1a13b5c390b",
+    "README.md": "ab07926382d0d46085c32ba21877fa79b0a8aa33ac2563c1c72f90f3b6333aa2",
     "SKILL.md": "09c915aa8872eb1a024ee3a34b6735f6ddcecc6aa0a63c7d6c570a430a04a18c",
     "benchmark.py": "2c5f37fba8eb1f30e8b832c0b27befbe32264738d7476b7405af2e5a03d74d01",
     "check_witnesses.py": "71495a4c3d6c46755820de3de26bac784d79fe09ae3ae01a143bfcec27065848",

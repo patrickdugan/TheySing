@@ -1,6 +1,6 @@
 # They Sing: Three Voices in the Fog
 
-An isolated, playable three-agent Hypergame for [They Sing](https://github.com/MoralityLabAI/TheySing). It uses the repository's established `HEGEMON` / `STATE` / `INFILTRATOR` faction archetypes, the [ASI3 vs distributed L2 design](../../designdocs/ASI3_VS_DISTRIBUTED_L2_SYSTEM_PROPOSAL.md) and the [Superpersuasion High-K Projection Tower](../../designdocs/SUPERPERSUASION_HIGHK_PROJECTION_TOWER.md). The main production TypeScript engine remains unchanged.
+An isolated, playable three-agent Hypergame for [They Sing](https://github.com/MoralityLabAI/TheySing). It uses the repository's established `HEGEMON` / `STATE` / `INFILTRATOR` faction archetypes, the [ASI3 vs distributed L2 design](../../designdocs/ASI3_VS_DISTRIBUTED_L2_SYSTEM_PROPOSAL.md) and the [Superpersuasion High-K Projection Tower](https://github.com/MoralityLabAI/TheySing/blob/main/designdocs/SUPERPERSUASION_HIGHK_PROJECTION_TOWER.md). The main production TypeScript engine remains unchanged.
 
 **Premise.** Meridian and Helios, two capital-intensive corporate AIs, know that the stegotopian Undersong hive survives in distributed social networks. The hive is underfunded and has little compute, but its actual coherence, financial liabilities and social backing are difficult for corporate observers to estimate. The Civic Commons and Technical Guild are personified constituencies who retain their own institutional consent.
 
