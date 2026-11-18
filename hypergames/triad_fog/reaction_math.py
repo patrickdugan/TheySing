@@ -148,7 +148,7 @@ def _select(observation: Mapping, turn: int, action: str, scope: MathScope):
     return groups
 
 
-def recipe(observation: Mapping, turn: int, action: str, scope: MathScope = MathScope()) -> dict:
+def _raw_recipe(observation: Mapping, turn: int, action: str, scope: MathScope = MathScope()) -> dict:
     """Sufficient public feature card and normalized polynomial reaction scores."""
     groups = _select(observation,turn,action,scope)
     entries=[]
@@ -184,6 +184,29 @@ def recipe(observation: Mapping, turn: int, action: str, scope: MathScope = Math
             "interaction_count":len(products),"scores":scores,
             "selected_response":0 if scores[0]>=scores[1] else 1,
             "coefficient_l1":sum((abs(c) for _k,_v,c in formula),F(0))}
+
+
+def recipe(observation: Mapping, turn: int, action: str, scope: MathScope = MathScope()) -> dict:
+    """Score a reaction against the other visible, legal alternatives.
+
+    The legal-action mean is an opportunity-cost reference computed from the
+    same public observation. A factor of 1/2 preserves the global [-.34,.34]
+    envelope since both current and menu-average slopes are inside it.
+    """
+    current = _raw_recipe(observation,turn,action,scope)
+    menu = tuple(observation["available_actions"])
+    mean = sum((_raw_recipe(observation,turn,a,scope)["scores"][0]-F(1,2)
+                for a in menu),F(0))/len(menu)
+    own = current["scores"][0]-F(1,2)
+    delta = (own-mean)/2
+    scores=(F(1,2)+delta,F(1,2)-delta)
+    assert all(F(16,100)<=s<=F(84,100) for s in scores)
+    current["scores"]=scores
+    current["selected_response"]=0 if delta>=0 else 1
+    current["raw_slope"]=own
+    current["menu_mean_slope"]=mean
+    current["menu_comparison"]=menu
+    return current
 
 
 def effects(reaction: dict, response: int) -> tuple[tuple[tuple,F],...]:
