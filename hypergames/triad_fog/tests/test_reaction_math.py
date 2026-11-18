@@ -61,6 +61,18 @@ class ScopedMathTests(unittest.TestCase):
         with self.assertRaises(ValueError):recipe(view,1,'steal')
         with self.assertRaises(ValueError):MathScope(own_vars=70).validate()
         with self.assertRaises(ValueError):dirac_squared(((('sealed','x','y'),F(1)),))
+    def test_menu_centered_reactions_have_both_winners(self):
+        for seed in range(2026111801,2026111805):
+            game=TriadGame.new(seed)
+            for actor in AI_IDS:
+                view=game.visible(actor)
+                for turn in range(1,11):
+                    audit=public_audit(view,turn)
+                    outcomes={r['selected_response'] for r in audit}
+                    self.assertEqual(outcomes,{0,1})
+                    self.assertEqual(sum((recipe(view,turn,a)['scores'][0]-F(1,2)
+                                          for a in view['available_actions']),F(0)),F(0))
+
     def test_interaction_allocates_distinct_legal_belief_families(self):
         view=TriadGame.new(2026111801).visible('MERIDIAN')
         r=recipe(view,9,'hold')
