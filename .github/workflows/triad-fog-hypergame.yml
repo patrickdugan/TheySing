@@ -1,0 +1,36 @@
+name: They Sing triad fog hypergame
+on:
+  pull_request:
+    paths:
+      - 'hypergames/triad_fog/**'
+      - '.github/workflows/triad-fog-hypergame.yml'
+  push:
+    paths:
+      - 'hypergames/triad_fog/**'
+      - '.github/workflows/triad-fog-hypergame.yml'
+  workflow_dispatch:
+jobs:
+  exact-cpu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: hypergames/triad_fog
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate variable tensor, causal fog, resource accounting and no leakage
+        run: python -m unittest discover -s tests -p 'test_*.py' -q
+      - name: Verify all five ending witness paths
+        run: python check_witnesses.py
+      - name: Recreate full 32-seed public CPU census and compare source/row hashes
+        run: python benchmark.py --out artifacts --check
+      - name: Build uploadable per-turn public replay
+        run: python benchmark.py --out "$RUNNER_TEMP/triad-fog"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: triad-fog-480-episode-public-replay
+          path: ${{ runner.temp }}/triad-fog/
+          retention-days: 30

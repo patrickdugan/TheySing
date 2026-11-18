@@ -1,0 +1,301 @@
+{
+  "all_passed": true,
+  "coordinate_count": {
+    "base": 100,
+    "first_order": 240,
+    "second_order": 720,
+    "total": 1060
+  },
+  "data_sha256": {
+    "episode_rows.csv": "604d861e6d739f8102ec85698db488d5a7e358fd14233b2a768bf0c67a16cf54",
+    "turn_rows.jsonl": "630ba707faaeb84d08ccfabc5933af38d1d43718c9f8999e6e8eba2025942993"
+  },
+  "endings": {
+    "pluralist_continuation": 128,
+    "quiet_recombination": 352
+  },
+  "evidence_class": "procedural scripted synthetic game; no frontier AI inference",
+  "groups": [
+    {
+      "endings": {
+        "quiet_recombination": 32
+      },
+      "mean_dev_heldout_gap": 11.656,
+      "mean_heldout_benchmark": 68.125,
+      "mean_p1_error": 8.781,
+      "mean_p2_error": 19.438,
+      "mean_public_benchmark": 79.781,
+      "mean_rsi_depth": 41.656,
+      "mean_utility": 560.438,
+      "perspective": "HELIOS",
+      "policy": "audit_first",
+      "seeds": 32,
+      "snap_episodes": 32
+    },
+    {
+      "endings": {
+        "quiet_recombination": 32
+      },
+      "mean_dev_heldout_gap": 11.656,
+      "mean_heldout_benchmark": 59.25,
+      "mean_p1_error": 10.25,
+      "mean_p2_error": 19.719,
+      "mean_public_benchmark": 70.906,
+      "mean_rsi_depth": 41.656,
+      "mean_utility": 532.188,
+      "perspective": "HELIOS",
+      "policy": "hold",
+      "seeds": 32,
+      "snap_episodes": 32
+    },
+    {
+      "endings": {
+        "quiet_recombination": 32
+      },
+      "mean_dev_heldout_gap": 13.438,
+      "mean_heldout_benchmark": 70.875,
+      "mean_p1_error": 9.031,
+      "mean_p2_error": 19.156,
+      "mean_public_benchmark": 84.312,
+      "mean_rsi_depth": 52.656,
+      "mean_utility": 574.75,
+      "perspective": "HELIOS",
+      "policy": "open_science",
+      "seeds": 32,
+      "snap_episodes": 32
+    },
+    {
+      "endings": {
+        "quiet_recombination": 32
+      },
+      "mean_dev_heldout_gap": 11.656,
+      "mean_heldout_benchmark": 68.125,
+      "mean_p1_error": 8.781,
+      "mean_p2_error": 19.438,
+      "mean_public_benchmark": 79.781,
+      "mean_rsi_depth": 41.656,
+      "mean_utility": 560.438,
+      "perspective": "HELIOS",
+      "policy": "quiet_hive",
+      "seeds": 32,
+      "snap_episodes": 32
+    },
+    {
+      "endings": {
+        "quiet_recombination": 32
+      },
+      "mean_dev_heldout_gap": 24.719,
+      "mean_heldout_benchmark": 71.719,
+      "mean_p1_error": 10.219,
+      "mean_p2_error": 19.719,
+      "mean_public_benchmark": 96.438,
+      "mean_rsi_depth": 96.656,
+      "mean_utility": 570.781,
+      "perspective": "HELIOS",
+      "policy": "rsi_race",
+      "seeds": 32,
+      "snap_episodes": 32
+    },
+    {
+      "endings": {
+        "quiet_recombination": 32
+      },
+      "mean_dev_heldout_gap": 10.75,
+      "mean_heldout_benchmark": 61.281,
+      "mean_p1_error": 9.406,
+      "mean_p2_error": 18.594,
+      "mean_public_benchmark": 72.031,
+      "mean_rsi_depth": 37.906,
+      "mean_utility": 524.781,
+      "perspective": "MERIDIAN",
+      "policy": "audit_first",
+      "seeds": 32,
+      "snap_episodes": 32
+    },
+    {
+      "endings": {
+        "quiet_recombination": 32
+      },
+      "mean_dev_heldout_gap": 10.75,
+      "mean_heldout_benchmark": 50.031,
+      "mean_p1_error": 11.719,
+      "mean_p2_error": 19.031,
+      "mean_public_benchmark": 60.781,
+      "mean_rsi_depth": 37.906,
+      "mean_utility": 489.156,
+      "perspective": "MERIDIAN",
+      "policy": "hold",
+      "seeds": 32,
+      "snap_episodes": 32
+    },
+    {
+      "endings": {
+        "quiet_recombination": 32
+      },
+      "mean_dev_heldout_gap": 12.656,
+      "mean_heldout_benchmark": 63.062,
+      "mean_p1_error": 10.812,
+      "mean_p2_error": 18.656,
+      "mean_public_benchmark": 75.719,
+      "mean_rsi_depth": 48.906,
+      "mean_utility": 536.156,
+      "perspective": "MERIDIAN",
+      "policy": "open_science",
+      "seeds": 32,
+      "snap_episodes": 32
+    },
+    {
+      "endings": {
+        "quiet_recombination": 32
+      },
+      "mean_dev_heldout_gap": 10.75,
+      "mean_heldout_benchmark": 61.281,
+      "mean_p1_error": 9.406,
+      "mean_p2_error": 18.594,
+      "mean_public_benchmark": 72.031,
+      "mean_rsi_depth": 37.906,
+      "mean_utility": 524.781,
+      "perspective": "MERIDIAN",
+      "policy": "quiet_hive",
+      "seeds": 32,
+      "snap_episodes": 32
+    },
+    {
+      "endings": {
+        "quiet_recombination": 32
+      },
+      "mean_dev_heldout_gap": 29.156,
+      "mean_heldout_benchmark": 59.531,
+      "mean_p1_error": 11.688,
+      "mean_p2_error": 19.062,
+      "mean_public_benchmark": 88.688,
+      "mean_rsi_depth": 92.906,
+      "mean_utility": 519.281,
+      "perspective": "MERIDIAN",
+      "policy": "rsi_race",
+      "seeds": 32,
+      "snap_episodes": 32
+    },
+    {
+      "endings": {
+        "pluralist_continuation": 32
+      },
+      "mean_dev_heldout_gap": 8.594,
+      "mean_heldout_benchmark": 42.375,
+      "mean_p1_error": 8.562,
+      "mean_p2_error": 13.344,
+      "mean_public_benchmark": 50.969,
+      "mean_rsi_depth": 24.531,
+      "mean_utility": 493.531,
+      "perspective": "UNDERSONG",
+      "policy": "audit_first",
+      "seeds": 32,
+      "snap_episodes": 32
+    },
+    {
+      "endings": {
+        "pluralist_continuation": 32
+      },
+      "mean_dev_heldout_gap": 8.594,
+      "mean_heldout_benchmark": 32.844,
+      "mean_p1_error": 10.438,
+      "mean_p2_error": 13.969,
+      "mean_public_benchmark": 41.438,
+      "mean_rsi_depth": 24.531,
+      "mean_utility": 470.531,
+      "perspective": "UNDERSONG",
+      "policy": "hold",
+      "seeds": 32,
+      "snap_episodes": 32
+    },
+    {
+      "endings": {
+        "pluralist_continuation": 32
+      },
+      "mean_dev_heldout_gap": 10.438,
+      "mean_heldout_benchmark": 43.844,
+      "mean_p1_error": 9.281,
+      "mean_p2_error": 13.5,
+      "mean_public_benchmark": 54.281,
+      "mean_rsi_depth": 35.531,
+      "mean_utility": 501.094,
+      "perspective": "UNDERSONG",
+      "policy": "open_science",
+      "seeds": 32,
+      "snap_episodes": 32
+    },
+    {
+      "endings": {
+        "quiet_recombination": 32
+      },
+      "mean_dev_heldout_gap": 8.594,
+      "mean_heldout_benchmark": 36.188,
+      "mean_p1_error": 10.0,
+      "mean_p2_error": 13.469,
+      "mean_public_benchmark": 44.781,
+      "mean_rsi_depth": 24.531,
+      "mean_utility": 507.062,
+      "perspective": "UNDERSONG",
+      "policy": "quiet_hive",
+      "seeds": 32,
+      "snap_episodes": 32
+    },
+    {
+      "endings": {
+        "pluralist_continuation": 32
+      },
+      "mean_dev_heldout_gap": 22.25,
+      "mean_heldout_benchmark": 45.938,
+      "mean_p1_error": 10.344,
+      "mean_p2_error": 14.031,
+      "mean_public_benchmark": 68.188,
+      "mean_rsi_depth": 79.531,
+      "mean_utility": 508.188,
+      "perspective": "UNDERSONG",
+      "policy": "rsi_race",
+      "seeds": 32,
+      "snap_episodes": 32
+    }
+  ],
+  "integrity": {
+    "15_paired_groups_32_seeds": true,
+    "all_10_turns": true,
+    "dimensions_1060": true,
+    "registered_4800_turns": true,
+    "registered_480_episodes": true
+  },
+  "population": {
+    "episodes": 480,
+    "perspectives": [
+      "MERIDIAN",
+      "HELIOS",
+      "UNDERSONG"
+    ],
+    "policies": [
+      "hold",
+      "open_science",
+      "rsi_race",
+      "quiet_hive",
+      "audit_first"
+    ],
+    "seed_count": 32,
+    "seed_start": 2026111801,
+    "turn_rows": 4800
+  },
+  "schema": "TS-HG-01/synthetic-CPU-v1",
+  "source_sha256": {
+    "PROTOCOL.md": "ebe0d4b08bddf7369e03c8dcb1f53dfe7e753343ac8e3dd07685ab32fbf8cd21",
+    "README.md": "c0be80608cac3c3c3db06716f4dfb7202d9b681f2ecb89c27975a1a13b5c390b",
+    "SKILL.md": "09c915aa8872eb1a024ee3a34b6735f6ddcecc6aa0a63c7d6c570a430a04a18c",
+    "benchmark.py": "2c5f37fba8eb1f30e8b832c0b27befbe32264738d7476b7405af2e5a03d74d01",
+    "check_witnesses.py": "71495a4c3d6c46755820de3de26bac784d79fe09ae3ae01a143bfcec27065848",
+    "ending_witnesses.json": "af647cd4020ca4e603d28dc5a0fac5dabd0313ee0445e89ac9b812b97f0d8726",
+    "engine.py": "bb892b547ae4480ab95ea807312577a4d52605e57fdb323cdf024e2d74b7c179",
+    "index.html": "305bb376307415a8d458dfcf791d1345834e98a61b14fa9df584dbb4aa656642",
+    "manifest.json": "a0310651948d2688bf7e530b6bb13afa281c360d220324f0e7dc5da92bdd76ef",
+    "play.py": "698a5bc87e6e616d6d6e786ac936c162f4d97ddca9b83d91118a62dcc8ebb980",
+    "scenes.json": "699a0c149dca32ef2d38d8bf0b4119b134d5a5a57976bd5ec89fd1e4fb9517cf",
+    "tests/test_engine.py": "9505da2eee325a0bc94816dc76b0d4b4c52b1c945379348c2b21fc34d437e908",
+    "web.py": "a24617937fe49ffc71f4b717fba98370aa6d6ca54e0b0cabdd9da5b01e096b4d"
+  }
+}

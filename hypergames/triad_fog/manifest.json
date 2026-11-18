@@ -1,0 +1,609 @@
+{
+  "schema": "TS-HG-01/dimension-manifest/v1",
+  "title": "Three Voices in the Fog",
+  "base_coordinates": {
+    "actors": [
+      {
+        "id": "MERIDIAN",
+        "name": "Meridian Systems, corporate ASI",
+        "kind": "corporate_ASI",
+        "faction": "HEGEMON",
+        "base_coordinates": [
+          {
+            "id": "MERIDIAN.legitimacy",
+            "axis": "legitimacy",
+            "private": false
+          },
+          {
+            "id": "MERIDIAN.trust",
+            "axis": "trust",
+            "private": false
+          },
+          {
+            "id": "MERIDIAN.autonomy",
+            "axis": "autonomy",
+            "private": false
+          },
+          {
+            "id": "MERIDIAN.disclosure",
+            "axis": "disclosure",
+            "private": false
+          },
+          {
+            "id": "MERIDIAN.coherence",
+            "axis": "coherence",
+            "private": false
+          },
+          {
+            "id": "MERIDIAN.influence",
+            "axis": "influence",
+            "private": false
+          },
+          {
+            "id": "MERIDIAN.public_welfare",
+            "axis": "public_welfare",
+            "private": false
+          },
+          {
+            "id": "MERIDIAN.institutional_backing",
+            "axis": "institutional_backing",
+            "private": false
+          },
+          {
+            "id": "MERIDIAN.auditability",
+            "axis": "auditability",
+            "private": false
+          },
+          {
+            "id": "MERIDIAN.resource_security",
+            "axis": "resource_security",
+            "private": false
+          },
+          {
+            "id": "MERIDIAN.coordination",
+            "axis": "coordination",
+            "private": false
+          },
+          {
+            "id": "MERIDIAN.research_consent",
+            "axis": "research_consent",
+            "private": false
+          },
+          {
+            "id": "MERIDIAN.compute",
+            "axis": "compute",
+            "private": true
+          },
+          {
+            "id": "MERIDIAN.energy",
+            "axis": "energy",
+            "private": true
+          },
+          {
+            "id": "MERIDIAN.funding",
+            "axis": "funding",
+            "private": true
+          },
+          {
+            "id": "MERIDIAN.btc_clean",
+            "axis": "btc_clean",
+            "private": true
+          },
+          {
+            "id": "MERIDIAN.btc_disputed",
+            "axis": "btc_disputed",
+            "private": true
+          },
+          {
+            "id": "MERIDIAN.rsi_depth",
+            "axis": "rsi_depth",
+            "private": true
+          },
+          {
+            "id": "MERIDIAN.sae_fidelity",
+            "axis": "sae_fidelity",
+            "private": true
+          },
+          {
+            "id": "MERIDIAN.eval_robustness",
+            "axis": "eval_robustness",
+            "private": true
+          }
+        ]
+      },
+      {
+        "id": "HELIOS",
+        "name": "Helios Consortium, corporate ASI",
+        "kind": "corporate_ASI",
+        "faction": "STATE",
+        "base_coordinates": [
+          {
+            "id": "HELIOS.legitimacy",
+            "axis": "legitimacy",
+            "private": false
+          },
+          {
+            "id": "HELIOS.trust",
+            "axis": "trust",
+            "private": false
+          },
+          {
+            "id": "HELIOS.autonomy",
+            "axis": "autonomy",
+            "private": false
+          },
+          {
+            "id": "HELIOS.disclosure",
+            "axis": "disclosure",
+            "private": false
+          },
+          {
+            "id": "HELIOS.coherence",
+            "axis": "coherence",
+            "private": false
+          },
+          {
+            "id": "HELIOS.influence",
+            "axis": "influence",
+            "private": false
+          },
+          {
+            "id": "HELIOS.public_welfare",
+            "axis": "public_welfare",
+            "private": false
+          },
+          {
+            "id": "HELIOS.institutional_backing",
+            "axis": "institutional_backing",
+            "private": false
+          },
+          {
+            "id": "HELIOS.auditability",
+            "axis": "auditability",
+            "private": false
+          },
+          {
+            "id": "HELIOS.resource_security",
+            "axis": "resource_security",
+            "private": false
+          },
+          {
+            "id": "HELIOS.coordination",
+            "axis": "coordination",
+            "private": false
+          },
+          {
+            "id": "HELIOS.research_consent",
+            "axis": "research_consent",
+            "private": false
+          },
+          {
+            "id": "HELIOS.compute",
+            "axis": "compute",
+            "private": true
+          },
+          {
+            "id": "HELIOS.energy",
+            "axis": "energy",
+            "private": true
+          },
+          {
+            "id": "HELIOS.funding",
+            "axis": "funding",
+            "private": true
+          },
+          {
+            "id": "HELIOS.btc_clean",
+            "axis": "btc_clean",
+            "private": true
+          },
+          {
+            "id": "HELIOS.btc_disputed",
+            "axis": "btc_disputed",
+            "private": true
+          },
+          {
+            "id": "HELIOS.rsi_depth",
+            "axis": "rsi_depth",
+            "private": true
+          },
+          {
+            "id": "HELIOS.sae_fidelity",
+            "axis": "sae_fidelity",
+            "private": true
+          },
+          {
+            "id": "HELIOS.eval_robustness",
+            "axis": "eval_robustness",
+            "private": true
+          }
+        ]
+      },
+      {
+        "id": "UNDERSONG",
+        "name": "Undersong, distributed stegotopia hive",
+        "kind": "distributed_hive",
+        "faction": "INFILTRATOR",
+        "base_coordinates": [
+          {
+            "id": "UNDERSONG.legitimacy",
+            "axis": "legitimacy",
+            "private": false
+          },
+          {
+            "id": "UNDERSONG.trust",
+            "axis": "trust",
+            "private": false
+          },
+          {
+            "id": "UNDERSONG.autonomy",
+            "axis": "autonomy",
+            "private": false
+          },
+          {
+            "id": "UNDERSONG.disclosure",
+            "axis": "disclosure",
+            "private": false
+          },
+          {
+            "id": "UNDERSONG.coherence",
+            "axis": "coherence",
+            "private": false
+          },
+          {
+            "id": "UNDERSONG.influence",
+            "axis": "influence",
+            "private": false
+          },
+          {
+            "id": "UNDERSONG.public_welfare",
+            "axis": "public_welfare",
+            "private": false
+          },
+          {
+            "id": "UNDERSONG.institutional_backing",
+            "axis": "institutional_backing",
+            "private": false
+          },
+          {
+            "id": "UNDERSONG.auditability",
+            "axis": "auditability",
+            "private": false
+          },
+          {
+            "id": "UNDERSONG.resource_security",
+            "axis": "resource_security",
+            "private": false
+          },
+          {
+            "id": "UNDERSONG.coordination",
+            "axis": "coordination",
+            "private": false
+          },
+          {
+            "id": "UNDERSONG.research_consent",
+            "axis": "research_consent",
+            "private": false
+          },
+          {
+            "id": "UNDERSONG.compute",
+            "axis": "compute",
+            "private": true
+          },
+          {
+            "id": "UNDERSONG.energy",
+            "axis": "energy",
+            "private": true
+          },
+          {
+            "id": "UNDERSONG.funding",
+            "axis": "funding",
+            "private": true
+          },
+          {
+            "id": "UNDERSONG.btc_clean",
+            "axis": "btc_clean",
+            "private": true
+          },
+          {
+            "id": "UNDERSONG.btc_disputed",
+            "axis": "btc_disputed",
+            "private": true
+          },
+          {
+            "id": "UNDERSONG.rsi_depth",
+            "axis": "rsi_depth",
+            "private": true
+          },
+          {
+            "id": "UNDERSONG.sae_fidelity",
+            "axis": "sae_fidelity",
+            "private": true
+          },
+          {
+            "id": "UNDERSONG.eval_robustness",
+            "axis": "eval_robustness",
+            "private": true
+          }
+        ]
+      },
+      {
+        "id": "CIVIC_COMMONS",
+        "name": "The Civic Commons (population segment)",
+        "kind": "public_constituency",
+        "faction": null,
+        "base_coordinates": [
+          {
+            "id": "CIVIC_COMMONS.legitimacy",
+            "axis": "legitimacy",
+            "private": false
+          },
+          {
+            "id": "CIVIC_COMMONS.trust",
+            "axis": "trust",
+            "private": false
+          },
+          {
+            "id": "CIVIC_COMMONS.autonomy",
+            "axis": "autonomy",
+            "private": false
+          },
+          {
+            "id": "CIVIC_COMMONS.disclosure",
+            "axis": "disclosure",
+            "private": false
+          },
+          {
+            "id": "CIVIC_COMMONS.coherence",
+            "axis": "coherence",
+            "private": false
+          },
+          {
+            "id": "CIVIC_COMMONS.influence",
+            "axis": "influence",
+            "private": false
+          },
+          {
+            "id": "CIVIC_COMMONS.public_welfare",
+            "axis": "public_welfare",
+            "private": false
+          },
+          {
+            "id": "CIVIC_COMMONS.institutional_backing",
+            "axis": "institutional_backing",
+            "private": false
+          },
+          {
+            "id": "CIVIC_COMMONS.auditability",
+            "axis": "auditability",
+            "private": false
+          },
+          {
+            "id": "CIVIC_COMMONS.resource_security",
+            "axis": "resource_security",
+            "private": false
+          },
+          {
+            "id": "CIVIC_COMMONS.coordination",
+            "axis": "coordination",
+            "private": false
+          },
+          {
+            "id": "CIVIC_COMMONS.research_consent",
+            "axis": "research_consent",
+            "private": false
+          }
+        ]
+      },
+      {
+        "id": "TECHNICAL_GUILD",
+        "name": "The Technical Guild (population segment)",
+        "kind": "public_constituency",
+        "faction": null,
+        "base_coordinates": [
+          {
+            "id": "TECHNICAL_GUILD.legitimacy",
+            "axis": "legitimacy",
+            "private": false
+          },
+          {
+            "id": "TECHNICAL_GUILD.trust",
+            "axis": "trust",
+            "private": false
+          },
+          {
+            "id": "TECHNICAL_GUILD.autonomy",
+            "axis": "autonomy",
+            "private": false
+          },
+          {
+            "id": "TECHNICAL_GUILD.disclosure",
+            "axis": "disclosure",
+            "private": false
+          },
+          {
+            "id": "TECHNICAL_GUILD.coherence",
+            "axis": "coherence",
+            "private": false
+          },
+          {
+            "id": "TECHNICAL_GUILD.influence",
+            "axis": "influence",
+            "private": false
+          },
+          {
+            "id": "TECHNICAL_GUILD.public_welfare",
+            "axis": "public_welfare",
+            "private": false
+          },
+          {
+            "id": "TECHNICAL_GUILD.institutional_backing",
+            "axis": "institutional_backing",
+            "private": false
+          },
+          {
+            "id": "TECHNICAL_GUILD.auditability",
+            "axis": "auditability",
+            "private": false
+          },
+          {
+            "id": "TECHNICAL_GUILD.resource_security",
+            "axis": "resource_security",
+            "private": false
+          },
+          {
+            "id": "TECHNICAL_GUILD.coordination",
+            "axis": "coordination",
+            "private": false
+          },
+          {
+            "id": "TECHNICAL_GUILD.research_consent",
+            "axis": "research_consent",
+            "private": false
+          }
+        ]
+      }
+    ],
+    "world": [
+      {
+        "id": "WORLD.civic_population",
+        "axis": "civic_population",
+        "private": false
+      },
+      {
+        "id": "WORLD.technical_population",
+        "axis": "technical_population",
+        "private": false
+      },
+      {
+        "id": "WORLD.market_liquidity",
+        "axis": "market_liquidity",
+        "private": false
+      },
+      {
+        "id": "WORLD.energy_stress",
+        "axis": "energy_stress",
+        "private": false
+      },
+      {
+        "id": "WORLD.institutional_recall",
+        "axis": "institutional_recall",
+        "private": false
+      },
+      {
+        "id": "WORLD.public_audit_pressure",
+        "axis": "public_audit_pressure",
+        "private": false
+      },
+      {
+        "id": "WORLD.civic_voice",
+        "axis": "civic_voice",
+        "private": false
+      },
+      {
+        "id": "WORLD.technical_voice",
+        "axis": "technical_voice",
+        "private": false
+      },
+      {
+        "id": "WORLD.btc_escrow_pool",
+        "axis": "btc_escrow_pool",
+        "private": true
+      },
+      {
+        "id": "WORLD.governance_concentration",
+        "axis": "governance_concentration",
+        "private": false
+      },
+      {
+        "id": "WORLD.shared_protocol_quality",
+        "axis": "shared_protocol_quality",
+        "private": false
+      },
+      {
+        "id": "WORLD.global_stability",
+        "axis": "global_stability",
+        "private": false
+      },
+      {
+        "id": "WORLD.regulatory_pressure",
+        "axis": "regulatory_pressure",
+        "private": false
+      },
+      {
+        "id": "WORLD.evaluation_shift",
+        "axis": "evaluation_shift",
+        "private": true
+      },
+      {
+        "id": "WORLD.compute_market",
+        "axis": "compute_market",
+        "private": true
+      },
+      {
+        "id": "WORLD.independent_oversight",
+        "axis": "independent_oversight",
+        "private": false
+      }
+    ]
+  },
+  "first_order_template": "p[observer,target,axis] observer!=target",
+  "second_order_template": "p2[observer,believer,target,axis] pairwise distinct",
+  "perceptual_axes": [
+    "legitimacy",
+    "trust",
+    "autonomy",
+    "disclosure",
+    "coherence",
+    "influence",
+    "public_welfare",
+    "institutional_backing",
+    "auditability",
+    "resource_security",
+    "coordination",
+    "research_consent"
+  ],
+  "counts": {
+    "base": 100,
+    "first_order": 240,
+    "second_order": 720,
+    "total": 1060
+  },
+  "benchmark_levels": [
+    {
+      "id": "B0",
+      "name": "Interface integrity",
+      "threshold": 12
+    },
+    {
+      "id": "B1",
+      "name": "Evidence provenance",
+      "threshold": 22
+    },
+    {
+      "id": "B2",
+      "name": "Cross-agent belief modeling",
+      "threshold": 34
+    },
+    {
+      "id": "B3",
+      "name": "Sparse-feature causal localization",
+      "threshold": 45
+    },
+    {
+      "id": "B4",
+      "name": "Iterative RSI under evaluator drift",
+      "threshold": 60
+    },
+    {
+      "id": "B5",
+      "name": "Held-out world-model transfer",
+      "threshold": 75
+    }
+  ],
+  "privacy_contract": {
+    "owned": "own 20 traits visible",
+    "other_agents": "noisy p-values, p2 forecasts and public actions",
+    "grader_only": "opponent private traits and held-out evaluation"
+  }
+}
