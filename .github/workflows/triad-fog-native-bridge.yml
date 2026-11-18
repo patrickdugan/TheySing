@@ -1,0 +1,48 @@
+name: They Sing triad fog native scenario bridge
+on:
+  push:
+    paths:
+      - 'hypergames/triad_fog/export_native_overlay.py'
+      - 'hypergames/triad_fog/native_harness_smoke.cjs'
+      - 'hypergames/triad_fog/tests/test_native_overlay.py'
+      - 'hypergames/triad_fog/skills/native-overlay-bridge/**'
+      - 'hypergames/triad_fog/TSHG02_NATIVE_BRIDGE.md'
+      - 'hypergames/triad_fog/native_bridge_receipt.json'
+      - 'playtest/scenarios/three-voices-fog.json'
+      - 'playtest/sample-triad-fog-tournament.json'
+      - '.github/workflows/triad-fog-native-bridge.yml'
+  pull_request:
+    paths:
+      - 'hypergames/triad_fog/**'
+      - 'playtest/scenarios/three-voices-fog.json'
+      - 'playtest/sample-triad-fog-tournament.json'
+      - '.github/workflows/triad-fog-native-bridge.yml'
+  workflow_dispatch:
+jobs:
+  broadcast-safe-native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate all 60 Python tests, including private-state perturbations
+        run: python -m unittest discover -s hypergames/triad_fog/tests -p 'test_*.py' -q
+      - name: Regenerate exact public native JSON and compare byte-for-byte
+        run: |
+          python hypergames/triad_fog/export_native_overlay.py \
+            --seed 2026111801 \
+            --out playtest/scenarios/three-voices-fog.json \
+            --harness-config playtest/sample-triad-fog-tournament.json --check
+      - name: Verify pinned TS-HG-02 source and scenario receipts
+        run: python hypergames/triad_fog/verify_native_bridge.py
+      - name: Compile the real They Sing TypeScript harness
+        run: |
+          npm ci
+          npm run build:harness
+      - name: Load native ScenarioOverlay and assert public-only game state
+        run: node hypergames/triad_fog/native_harness_smoke.cjs
