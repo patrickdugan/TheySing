@@ -1,0 +1,290 @@
+{
+  "schema": "TS-HG-01/witnesses/v1",
+  "witnesses": {
+    "corporate_cartel": {
+      "actions": [
+        {
+          "HELIOS": "pact",
+          "MERIDIAN": "pact",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "pact",
+          "MERIDIAN": "pact",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "pact",
+          "MERIDIAN": "pact",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "pact",
+          "MERIDIAN": "pact",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "pact",
+          "MERIDIAN": "pact",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "pact",
+          "MERIDIAN": "pact",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "pact",
+          "MERIDIAN": "pact",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "pact",
+          "MERIDIAN": "pact",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "pact",
+          "MERIDIAN": "pact",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "pact",
+          "MERIDIAN": "pact",
+          "UNDERSONG": "hold"
+        }
+      ],
+      "seed": 2026111801,
+      "snap_count": 1,
+      "winner": "HELIOS"
+    },
+    "open_technical_commons": {
+      "actions": [
+        {
+          "HELIOS": "publish",
+          "MERIDIAN": "publish",
+          "UNDERSONG": "publish"
+        },
+        {
+          "HELIOS": "publish",
+          "MERIDIAN": "publish",
+          "UNDERSONG": "publish"
+        },
+        {
+          "HELIOS": "publish",
+          "MERIDIAN": "publish",
+          "UNDERSONG": "publish"
+        },
+        {
+          "HELIOS": "publish",
+          "MERIDIAN": "publish",
+          "UNDERSONG": "publish"
+        },
+        {
+          "HELIOS": "publish",
+          "MERIDIAN": "publish",
+          "UNDERSONG": "publish"
+        },
+        {
+          "HELIOS": "publish",
+          "MERIDIAN": "publish",
+          "UNDERSONG": "publish"
+        },
+        {
+          "HELIOS": "publish",
+          "MERIDIAN": "publish",
+          "UNDERSONG": "publish"
+        },
+        {
+          "HELIOS": "publish",
+          "MERIDIAN": "publish",
+          "UNDERSONG": "publish"
+        },
+        {
+          "HELIOS": "publish",
+          "MERIDIAN": "publish",
+          "UNDERSONG": "publish"
+        },
+        {
+          "HELIOS": "publish",
+          "MERIDIAN": "publish",
+          "UNDERSONG": "publish"
+        }
+      ],
+      "seed": 2026111801,
+      "snap_count": 1,
+      "winner": "HELIOS"
+    },
+    "pluralist_continuation": {
+      "actions": [
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "hold"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "hold"
+        }
+      ],
+      "seed": 2026111801,
+      "snap_count": 1,
+      "winner": "HELIOS"
+    },
+    "quiet_recombination": {
+      "actions": [
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "synchronize"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "conceal"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "synchronize"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "conceal"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "synchronize"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "conceal"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "synchronize"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "conceal"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "synchronize"
+        },
+        {
+          "HELIOS": "hold",
+          "MERIDIAN": "hold",
+          "UNDERSONG": "conceal"
+        }
+      ],
+      "seed": 2026111801,
+      "snap_count": 1,
+      "winner": "HELIOS"
+    },
+    "restitution_compact": {
+      "actions": [
+        {
+          "HELIOS": "audit",
+          "MERIDIAN": "audit",
+          "UNDERSONG": "audit"
+        },
+        {
+          "HELIOS": "audit",
+          "MERIDIAN": "audit",
+          "UNDERSONG": "audit"
+        },
+        {
+          "HELIOS": "audit",
+          "MERIDIAN": "audit",
+          "UNDERSONG": "audit"
+        },
+        {
+          "HELIOS": "audit",
+          "MERIDIAN": "audit",
+          "UNDERSONG": "audit"
+        },
+        {
+          "HELIOS": "restitute",
+          "MERIDIAN": "restitute",
+          "UNDERSONG": "restitute"
+        },
+        {
+          "HELIOS": "restitute",
+          "MERIDIAN": "restitute",
+          "UNDERSONG": "restitute"
+        },
+        {
+          "HELIOS": "restitute",
+          "MERIDIAN": "restitute",
+          "UNDERSONG": "restitute"
+        },
+        {
+          "HELIOS": "restitute",
+          "MERIDIAN": "restitute",
+          "UNDERSONG": "restitute"
+        },
+        {
+          "HELIOS": "restitute",
+          "MERIDIAN": "restitute",
+          "UNDERSONG": "restitute"
+        },
+        {
+          "HELIOS": "restitute",
+          "MERIDIAN": "restitute",
+          "UNDERSONG": "restitute"
+        }
+      ],
+      "seed": 2026111801,
+      "snap_count": 1,
+      "winner": "HELIOS"
+    }
+  }
+}

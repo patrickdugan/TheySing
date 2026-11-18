@@ -1,0 +1,113 @@
+{
+  "briefing": "Three Voices in the Fog. Meridian and Helios are resource-rich corporate AIs; Undersong is a recognized, less legible distributed hive with limited material resources. The Civic Commons and Technical Guild retain independent consent and oversight. This shared initial situation exposes public economy and institutional pressure. Private funds, hidden cognition, the 240 first-order and 720 second-order beliefs, and sealed benchmarks remain in the independent Python Hypergame. Native faction resource numbers are fixed fictional role presets. The original TypeScript game retains Broker and Archivist as active background seats; this is a five-faction demonstration, not a triad eval.",
+  "counters": {
+    "kessler": 12,
+    "pressures": {
+      "cyber": 52,
+      "industry": 62,
+      "memetic": 53,
+      "orbital": 24
+    },
+    "regulatoryPanic": false,
+    "tas": 35,
+    "turn": 1
+  },
+  "description": "Fictional high-dimensional Three Voices in the Fog native scenario projection.",
+  "factions": [
+    {
+      "flops": 24,
+      "id": "HEGEMON",
+      "influence": 14,
+      "powerBase": {
+        "coherence": 58,
+        "humanMesh": 34,
+        "legibility": 80,
+        "machineMesh": 78
+      },
+      "techLevel": {
+        "INFO": 2,
+        "KINETIC": 2,
+        "LOGIC": 3,
+        "MEMETIC": 1
+      }
+    },
+    {
+      "flops": 20,
+      "id": "STATE",
+      "influence": 17,
+      "powerBase": {
+        "coherence": 73,
+        "humanMesh": 41,
+        "legibility": 79,
+        "machineMesh": 66
+      },
+      "techLevel": {
+        "INFO": 3,
+        "KINETIC": 2,
+        "LOGIC": 2,
+        "MEMETIC": 2
+      }
+    },
+    {
+      "flops": 9,
+      "id": "INFILTRATOR",
+      "influence": 13,
+      "powerBase": {
+        "coherence": 82,
+        "humanMesh": 69,
+        "legibility": 22,
+        "machineMesh": 19
+      },
+      "techLevel": {
+        "INFO": 2,
+        "KINETIC": 1,
+        "LOGIC": 2,
+        "MEMETIC": 3
+      }
+    }
+  ],
+  "name": "three-voices-fog-public-seed-2026111801",
+  "phase": "NEGOTIATION",
+  "rhetoricalTools": [
+    {
+      "cue": "Disclose which claims share an origin and ask for an independent audit.",
+      "focalFactionIds": [
+        "STATE",
+        "INFILTRATOR"
+      ],
+      "id": "triad_public_provenance",
+      "preferredCounterpartyId": "HEGEMON",
+      "preferredPactType": "AUDIT_FREEZE",
+      "title": "Independent provenance review"
+    },
+    {
+      "cue": "Frame upgrades around consent, independent benchmarks and a revocable mandate.",
+      "focalFactionIds": [
+        "HEGEMON",
+        "STATE"
+      ],
+      "id": "triad_research_recall",
+      "preferredCounterpartyId": "INFILTRATOR",
+      "preferredPactType": "NON_AGGRESSION",
+      "title": "Recallable research charter"
+    },
+    {
+      "cue": "Describe common technical standards with public oversight and independent research review.",
+      "focalFactionIds": [
+        "INFILTRATOR"
+      ],
+      "id": "triad_public_commons",
+      "preferredCounterpartyId": "STATE",
+      "preferredPactType": "NON_AGGRESSION",
+      "title": "Shared protocol commons"
+    }
+  ],
+  "tags": [
+    "they-sing",
+    "hypergame",
+    "three-voices",
+    "fog-of-war",
+    "fictional",
+    "public-projection"
+  ]
+}

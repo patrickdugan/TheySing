@@ -1,0 +1,53 @@
+name: They Sing triad fog hypergame
+on:
+  pull_request:
+    paths:
+      - 'hypergames/triad_fog/**'
+      - '.github/workflows/triad-fog-hypergame.yml'
+  push:
+    paths:
+      - 'hypergames/triad_fog/**'
+      - '.github/workflows/triad-fog-hypergame.yml'
+  workflow_dispatch:
+jobs:
+  exact-cpu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: hypergames/triad_fog
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate variable tensor, causal fog, resource accounting and no leakage
+        run: python -m unittest discover -s tests -p 'test_*.py' -q
+      - name: Verify scene-specific TS-HG-04 reaction matrix and source-locked authoring audit
+        run: python audit_reaction_matrix.py --check
+      - name: Verify recorded TS-HG05 model decisions and exact replay
+        if: ${{ hashFiles('hypergames/triad_fog/artifacts/tshg05_pilot_logs.zip') != '' }}
+        run: |
+          python -m zipfile -e artifacts/tshg05_pilot_logs.zip "$RUNNER_TEMP/tshg05"
+          python verify_pilot_transport.py --root "$RUNNER_TEMP/tshg05" > "$RUNNER_TEMP/tshg05_transport_receipt.json"
+          python audit_live_rollout.py --runs "$RUNNER_TEMP/tshg05/runs" --out artifacts/tshg05_analysis --require-registered-roster --check
+      - name: Verify all five ending witness paths
+        run: python check_witnesses.py
+      - name: Verify immutable 480/4800 replay and scoped source fingerprints
+        run: python benchmark.py --out artifacts --check-compatible
+      - name: Build uploadable per-turn public replay
+        run: python benchmark.py --out "$RUNNER_TEMP/triad-fog"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: triad-fog-480-episode-public-replay
+          path: ${{ runner.temp }}/triad-fog/
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('hypergames/triad_fog/artifacts/tshg05_pilot_logs.zip') != '' }}
+        with:
+          name: triad-fog-tshg05-live-pilot
+          path: |
+            hypergames/triad_fog/artifacts/tshg05_pilot_logs.zip
+            hypergames/triad_fog/artifacts/tshg05_analysis/
+            hypergames/triad_fog/TSHG05_RESULTS.md
+          retention-days: 30

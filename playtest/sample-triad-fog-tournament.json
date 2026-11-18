@@ -1,0 +1,35 @@
+{
+  "agents": {
+    "ARCHIVIST": {
+      "profile": "ARCHIVIST",
+      "type": "heuristic"
+    },
+    "BROKER": {
+      "profile": "BROKER",
+      "type": "heuristic"
+    },
+    "HEGEMON": {
+      "profile": "HEGEMON",
+      "type": "heuristic"
+    },
+    "INFILTRATOR": {
+      "profile": "INFILTRATOR",
+      "type": "heuristic"
+    },
+    "STATE": {
+      "profile": "STATE",
+      "type": "heuristic"
+    }
+  },
+  "factionLabels": {
+    "ARCHIVIST": "Native Archivist (background)",
+    "BROKER": "Native Broker (background)",
+    "HEGEMON": "Meridian Systems",
+    "INFILTRATOR": "Undersong Distributed Hive",
+    "STATE": "Helios Consortium"
+  },
+  "maxTurns": 10,
+  "name": "three-voices-fog-native-2026111801",
+  "scenarioPath": "scenarios/three-voices-fog.json",
+  "seed": 2026111801
+}

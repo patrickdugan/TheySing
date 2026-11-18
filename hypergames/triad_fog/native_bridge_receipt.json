@@ -1,0 +1,19 @@
+{
+  "frozen_parent_episode_summary_sha256": "1b2c24e1b73c23d4cbd04f578bfc8ae68b91d9bbff0325f9bd2fbbc698d5fc88",
+  "native_background_seats": 2,
+  "native_focal_factions": 3,
+  "private_sidecar_emitted": false,
+  "schema": "TS-HG-02/native-public-overlay-receipt-v1",
+  "scope": "public projection of fictional 1,060-coordinate game into native five-seat TypeScript scenario; no frontier inference",
+  "source_sha256": {
+    ".github/workflows/triad-fog-native-bridge.yml": "93fbaa26395cf7385342fa1d0092a97b43f3513372c44faf33919e5ebe73bc0b",
+    "hypergames/triad_fog/TSHG02_NATIVE_BRIDGE.md": "2c90026768078fe2f4c564144b2df6e593bb566d3bdf55ef34caccb164e96d86",
+    "hypergames/triad_fog/export_native_overlay.py": "20e705683cb84831d33e60a66c9e416a12d2cd5e13e6044f41b02a3d44e5d62d",
+    "hypergames/triad_fog/native_harness_smoke.cjs": "b42d71a05836b4323ef98d60f414fd1a3b7943b0d8a3343d68b59d5ad6fc2149",
+    "hypergames/triad_fog/skills/native-overlay-bridge/SKILL.md": "a2cd788a02f18b9a86831a8479f75ff6ee7e0fcb079cb40df8e229ad4fa56224",
+    "hypergames/triad_fog/tests/test_native_overlay.py": "020b4d810bc1f799554c332dd441d8bd1dad76ebe631cc4f6e9797fd44c40636",
+    "hypergames/triad_fog/verify_native_bridge.py": "a3de3e75ed819c4b677929160f99d5b696ede57629e823013d9b074b48f63baf",
+    "playtest/sample-triad-fog-tournament.json": "3262228d92f6ef9511bdfc20b5757f9bdb51b8c3b482cd0dbc047470c3481166",
+    "playtest/scenarios/three-voices-fog.json": "663621abb0d3043647435e903263208c8afbcfe452f32d5645b87e55a734a8ee"
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "action_balance": {
+    "audit": {
+      "0": 43,
+      "1": 37
+    },
+    "benchmark": {
+      "0": 40,
+      "1": 40
+    },
+    "conceal": {
+      "0": 12,
+      "1": 15
+    },
+    "dialogue": {
+      "0": 52,
+      "1": 28
+    },
+    "fund": {
+      "0": 25,
+      "1": 55
+    },
+    "hold": {
+      "0": 50,
+      "1": 30
+    },
+    "interpret": {
+      "0": 41,
+      "1": 39
+    },
+    "pact": {
+      "0": 49,
+      "1": 31
+    },
+    "publish": {
+      "0": 47,
+      "1": 33
+    },
+    "restitute": {
+      "0": 35,
+      "1": 45
+    },
+    "rsi": {
+      "0": 27,
+      "1": 53
+    },
+    "synchronize": {
+      "0": 17,
+      "1": 10
+    }
+  },
+  "competing_reactions": 1708,
+  "evidence_class": "synthetic source-only descriptive development",
+  "formula_term_max": 38,
+  "formula_term_min": 20,
+  "interaction_rows": 854,
+  "max_reaction_distance_squared": "53951783/5760000000",
+  "mean_terms": 31.1768,
+  "min_reaction_distance_squared": "136905401/36000000000",
+  "observation_policy": "same-initial-observation-all-ten-templates",
+  "p2_rows": 834,
+  "perspectives": [
+    "MERIDIAN",
+    "HELIOS",
+    "UNDERSONG"
+  ],
+  "respondent_option_rows": 854,
+  "response_selections": {
+    "0": 438,
+    "1": 416
+  },
+  "rows_sha256": "25a1003a3b0dd58aeab7d5d6390f58cf293266d7d404adf95e3091f550c68d2d",
+  "scenes": 10,
+  "schema": "TS-HG-04/public-development-authoring-audit-v1",
+  "seed": 2026111801,
+  "small_projection": {
+    "interactions": 5,
+    "other_ai_vars_each": 5,
+    "own_vars": 5,
+    "p2_terms": 3,
+    "public_vars_each": 4,
+    "world_vars": 3
+  },
+  "small_scope_winner_certified": 296,
+  "small_scope_winner_matches": 836,
+  "source_sha256": {
+    "engine.py": "bb892b547ae4480ab95ea807312577a4d52605e57fdb323cdf024e2d74b7c179",
+    "reaction_matrix.py": "a6b786f287385207d66f0a48ad2a5e3a745e4253f8285bafd2f074071ea0458a"
+  }
+}
